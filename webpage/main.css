@@ -3,31 +3,26 @@
 @import url('https://fonts.googleapis.com/css?family=Numans');
 
 html,body{
-background-image: url('http://getwallpapers.com/wallpaper/full/a/5/d/544750.jpg');
+background-image: url('http://getwallpapers.com/wallpaper/full/e/c/0/57384.jpg');
 background-size: cover;
 background-repeat: no-repeat;
 height: 100%;
 font-family: 'Numans', sans-serif;
 }
 
-h1{
-text-align: center;
-color: aquamarine;
-}
-
-h2{
+#header {
     text-align: center;
-    color: aquamarine;
-    }
+    color: rgb(180, 77, 29);  
+}
 
 
 .container{
 height: 65%;
-align-content: center;
+align-content: left;
 }
 
 .card{
-height: 350px;
+height: 400px;
 margin-top: auto;
 margin-bottom: auto;
 width: 400px;
@@ -57,7 +52,7 @@ top: -45px;
 
 .input-group-prepend span{
 width: 50px;
-background-color: rgb(105, 255, 18);
+background-color: #FFC312;
 color: black;
 border:0 !important;
 }
