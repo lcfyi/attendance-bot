@@ -1,4 +1,4 @@
-var dict = {"efe": 12345, "oscar": "andi"};
+var dict = {"efe": 123};
 document.getElementById('loginBtn').onmousedown = checkuser;
 
 function validate(){
@@ -32,5 +32,5 @@ function validate(){
 
 function checkuser(){
     if(validate())
-    window.location.href = 'main.html';
+    window.location.href = '../main/main.html';
 }
