@@ -75,6 +75,13 @@ input:focus{
     font-size: 20px;
 }
 
+#switching{
+    color:rgb(243, 156, 16);
+    position: absolute;
+    left:10%;
+    bottom:10%;
+    font-size:25px;
+}
 
 #patrick{
     color:rgb(214, 27, 136);
