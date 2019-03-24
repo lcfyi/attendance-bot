@@ -3,7 +3,7 @@
 @import url('https://fonts.googleapis.com/css?family=Numans');
 
 html,body{
-background-image: url('http://getwallpapers.com/wallpaper/full/e/c/0/57384.jpg');
+background-image: url('../src/login.jpg');
 background-size: cover;
 background-repeat: no-repeat;
 height: 100%;
@@ -73,14 +73,6 @@ input:focus{
 #error{
     color:rgb(233, 129, 10);
     font-size: 20px;
-}
-
-#switching{
-    color:rgb(243, 156, 16);
-    position: absolute;
-    left:10%;
-    bottom:10%;
-    font-size:25px;
 }
 
 #patrick{

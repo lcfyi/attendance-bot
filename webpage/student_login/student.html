@@ -2,23 +2,48 @@
 
 <html>
 <head>
-    <title>Student Log In</title>
+    <title>Student LogIn Page</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
     
 	<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css" integrity="sha384-mzrmE5qonljUremFsqc01SB46JvROS7bZs3IO2EmfFsd15uHvIt+Y8vEf7N7fWAU" crossorigin="anonymous">
     <link rel="stylesheet" type="text/css" href="student.css">
 </head>
 <body>
-<p id = "studentlogin">student login</p>
-<div>
-    <button type="button" id = "switching"
-    class="btn btn-light">switch to teacher mode</button>
-</div>
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+  <a class="navbar-brand" href="#">
+    <img src="../src/logo.png" width="30" height="30" alt="">
+  </a>
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+  <div class="collapse navbar-collapse" id="navbarNav">
+    <ul class="navbar-nav">
+      <li class="nav-item active">
+        <a class="nav-link" href="../home/home.html">Home <span class="sr-only">(current)</span></a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="../student_login/student.html">Student Log In</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="../teacher_login/teacher.html">Teacher Log In</a>
+      </li>
+    </ul>
+  </div>
+</nav>
+
+
+<video id = "video"></video>
+
+<button type="button" id = "status" class="btn btn-warning">Not Authorized</button>
+<button type="button" id = "door" class="btn btn-warning">Door Closed</button>
+
+<button type="button" id = "switch" class="btn btn-info" onmousedown = "switching()">switch</button>
+
+<p id = 'patrick'> Welcome! </p>
+
+
+<script src = "student.js"></script>
+
 </body>
-<script>
-document.getElementById('switching').onclick = switching;
-function switching(){
-    window.location.href = '../teacher_login/teacher.html';
-}
-</script>
+
 </html>

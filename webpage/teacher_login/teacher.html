@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<title>Login Page</title>
+	<title>Teacher Login Page</title>
    
 	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
     
@@ -10,9 +10,31 @@
 	<link rel="stylesheet" type="text/css" href="teacher.css">
 </head>
 <body>
+
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+   <a class="navbar-brand" href="#">
+    <img src="../src/logo.png" width="30" height="30" alt="">
+  </a>
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+  <div class="collapse navbar-collapse" id="navbarNav">
+    <ul class="navbar-nav">
+      <li class="nav-item active">
+        <a class="nav-link" href="../home/home.html">Home <span class="sr-only">(current)</span></a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="../student_login/student.html">Student Log In</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="teacher.html">Teacher Log In</a>
+      </li>
+    </ul>
+  </div>
+</nav>
 <div id="header">
-	<h1>Cpen 291 A16</h1>
-	<h2>Instructions :) Need to add more here</h2>
+	<h1>Cpen 291 A16 Team</h1>
+	<h2>Teacher LogIn</h2>
 </div>
 <div class="container">
 	<div class="d-flex justify-content-center h-100">
@@ -47,9 +69,7 @@
 	</div>
 </div>
 <p id="patrick"> welcome! </p>
-<div>
-<button type="button" id = "switching"class="btn btn-light">switch to student mode</button>
-</div>
+
 <script src = "teacher.js"></script>
 
 

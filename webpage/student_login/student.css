@@ -1,24 +1,44 @@
 @import url('https://fonts.googleapis.com/css?family=Numans');
 
 html,body{
-    background-image: url('http://getwallpapers.com/wallpaper/full/e/c/0/57384.jpg');
+    background-image: url('../src/login.jpg');
     background-size: cover;
     background-repeat: no-repeat;
     height: 100%;
     font-family: 'Numans', sans-serif;
     }
 
-#switching{
-    position: absolute;
-    left: 10%;
-    bottom: 10%;
-    color:rgb(243, 156, 16);
+#status{
     font-size:25px;
+    position: absolute;
+    left:33%;
+    top:70%; 
 }
 
-#studentlogin{
-    position:absolute;
-    font-size: 30px;
-    left:45%;
-    top:5%;
+#door{
+    font-size:25px;
+    position: absolute;
+    left:35%;
+    top:80%; 
+}
+
+#switch{
+    font-size:25px;
+    position: absolute;
+    left:4%;
+    top:80%; 
+}
+
+#video{
+    position: absolute;
+    left:18%;
+    top:8%; 
+}
+
+#patrick{
+    color:rgb(214, 27, 136);
+    font-size:30px;
+    position: absolute;
+    right: 22%;
+    top: 50%;
 }
