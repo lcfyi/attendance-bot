@@ -1,0 +1,44 @@
+@import url('https://fonts.googleapis.com/css?family=Numans');
+
+html,body{
+    background-image: url('../src/login.jpg');
+    background-size: cover;
+    background-repeat: no-repeat;
+    height: 100%;
+    font-family: 'Numans', sans-serif;
+    }
+
+#status{
+    font-size:25px;
+    position: absolute;
+    left:33%;
+    top:70%; 
+}
+
+#door{
+    font-size:25px;
+    position: absolute;
+    left:35%;
+    top:80%; 
+}
+
+#switch{
+    font-size:25px;
+    position: absolute;
+    left:4%;
+    top:80%; 
+}
+
+#video{
+    position: absolute;
+    left:18%;
+    top:8%; 
+}
+
+#patrick{
+    color:rgb(214, 27, 136);
+    font-size:30px;
+    position: absolute;
+    right: 22%;
+    top: 50%;
+}

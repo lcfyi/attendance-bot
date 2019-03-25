@@ -3,7 +3,7 @@
 @import url('https://fonts.googleapis.com/css?family=Numans');
 
 html,body{
-background-image: url('http://getwallpapers.com/wallpaper/full/e/c/0/57384.jpg');
+background-image: url('../src/login.jpg');
 background-size: cover;
 background-repeat: no-repeat;
 height: 100%;
@@ -21,7 +21,7 @@ font-family: 'Numans', sans-serif;
 }
 
 .card{
-    height: 330px;
+    height: 370px;
     margin-top: auto;
     margin-bottom: auto;
     width: 400px;
@@ -75,13 +75,12 @@ input:focus{
     font-size: 20px;
 }
 
-
 #patrick{
     color:rgb(214, 27, 136);
-    font-size:40px;
+    font-size:30px;
     position: absolute;
-    right: 290px;
-    top: 350px;
+    right: 22%;
+    top: 50%;
 
 }
 .login_btn:hover{
