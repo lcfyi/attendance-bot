@@ -18,10 +18,10 @@
  <?php
  $db_host = 'localhost';
  $db_user = 'root';
- $db_pwd = 'lptm42b';
+ $db_pwd = 'samkayisi';
  
- $database = 'sphinx';
- $table = 'spheres';
+ $database = '291p1testdb';
+ $table = 'cridentials';
  
  if (!mysql_connect($db_host, $db_user, $db_pwd))
      die("Can't connect to database");
@@ -55,17 +55,18 @@
             $row_count++;
         ?>
         <tr>
-            <? php for($count =0; $count<$fields_num; $count){ ?>
-                <td>echo $row[count]</td>;
+            <?php for($count =0; $count<$fields_num; $count++){ ?>
+                <td><?php echo $row[$count] ?></td>;
             <?php } ?>
         </tr>
         <?php } ?>
     </tbody>
 
-</table>
+
  <?php   
  mysql_free_result($result);
- $conn->close();
  ?>
+ </table>
+ </div>
 </body>
 </html>
