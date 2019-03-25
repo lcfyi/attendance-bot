@@ -4,11 +4,14 @@
     <meta charset="UTF-8">
     <title>OscarEfe.com</title>
     <link rel="stylesheet" href="css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
 
 </head>
 <body>
 <!-- Taken from http://www.anyexample.com/programming/php/php_mysql_example__display_table_as_html.xml-->
-<!-- Can add styling to the table-->
  <?php
  $db_host = 'localhost';
  $db_user = 'root';
@@ -30,29 +33,35 @@
  }
  
  $fields_num = mysql_num_fields($result);
- 
- echo "<h1>Table: {$table}</h1>";
- echo "<table border='1'><tr>";
- // printing table headers
- for($i=0; $i<$fields_num; $i++)
- {
-     $field = mysql_fetch_field($result);
-     echo "<td>{$field->name}</td>";
- }
- echo "</tr>\n";
- // printing table rows
- while($row = mysql_fetch_row($result))
- {
-     echo "<tr>";
- 
-     // $row is array... foreach( .. ) puts every element
-     // of $row to $cell variable
-     foreach($row as $cell)
-         echo "<td>$cell</td>";
- 
-     echo "</tr>\n";
- }
+ $head = mysql_fetch_row($result);
+
+<table class="table table-dark">
+    
+    <thead>
+      <tr>
+        for($x =0 ; $x<$fields_num; $x++){
+        <th scope="col">head[fields_num]</th>
+        }
+    </tr>
+    </thead>
+
+    <tbody>
+        $row_count=0;
+        while($row = mysql_fetch_row($result))
+        {
+            $row_count++;
+        <tr>
+            <th scope="row">row_count</th>
+            for($count =0; $count<$fields_num; $count){
+                <td>$row[count]</td>;
+            }
+        </tr>
+    </tbody>
+
+</table>
+    
  mysql_free_result($result);
+ $conn->close();
  ?>
 </body>
 </html>
