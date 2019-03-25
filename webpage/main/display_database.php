@@ -23,26 +23,24 @@
  $database = '291p1testdb';
  $table = 'cridentials';
  
- if (!mysql_connect($db_host, $db_user, $db_pwd))
+ $con = mysqli_connect($db_host, $db_user, $db_pwd, $database);
+ if (!$con)
      die("Can't connect to database");
  
- if (!mysql_select_db($database))
-     die("Can't select database");
- 
  // sending query
- $result = mysql_query("SELECT * FROM {$table}");
+ $result = mysqli_query($con,"SELECT * FROM {$table}");
  if (!$result) {
      die("Query to show fields from table failed");
  }
  
- $fields_num = mysql_num_fields($result);
- $head = mysql_fetch_row($result);
+ $fields_num = mysqli_num_fields($result);
+ $head = mysqli_fetch_fields($result);
  ?>
 
     <thead>
       <tr>
         <?php for($x =0 ; $x<$fields_num; $x++){ ?>
-        <th scope="col"><?php echo $head[fields_num] ?> </th>
+        <th scope="col"><?php echo $head[$x]->name ?> </th>
          <?php } ?>
     </tr>
     </thead>
@@ -50,7 +48,7 @@
     <tbody>
         <?php
         $row_count=0;
-        while($row = mysql_fetch_row($result))
+        while($row = mysqli_fetch_row($result))
         {
             $row_count++;
         ?>
@@ -64,7 +62,7 @@
 
 
  <?php   
- mysql_free_result($result);
+ mysqli_free_result($result);
  ?>
  </table>
  </div>
