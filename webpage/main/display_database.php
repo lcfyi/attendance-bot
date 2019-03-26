@@ -47,15 +47,14 @@
 
     <tbody>
         <?php
-        $row_count=0;
         while($row = mysqli_fetch_row($result))
         {
-            $row_count++;
         ?>
         <tr>
-            <?php for($count =0; $count<$fields_num; $count++){ ?>
-                <td><?php echo $row[$count] ?></td>;
-            <?php } ?>
+            <?php for($count =0; $count<$fields_num-1; $count++){ ?>
+                <td><?php echo $row[$count] ?></td>
+            <?php } ?> 
+			<td> <img src= "<?php echo $row[$count++]; ?>" width='50%' height = '%50' </td>
         </tr>
         <?php } ?>
     </tbody>
