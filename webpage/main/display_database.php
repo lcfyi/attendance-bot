@@ -11,7 +11,9 @@
 
 </head>
 <body>
-
+<div class="container">
+  <h3>Welcome to the Display Data Page!</h3>
+</div>
 <div class="container">
 <table class="table table-dark">
     <!-- Based upon http://www.anyexample.com/programming/php/php_mysql_example__display_table_as_html.xml-->
@@ -54,7 +56,8 @@
             <?php for($count =0; $count<$fields_num-1; $count++){ ?>
                 <td><?php echo $row[$count] ?></td>
             <?php } ?> 
-			<td> <img src= "<?php echo $row[$count++]; ?>" width='50%' height = '%50' </td>
+			<!---Fix image dimension so that it is resized according to display size of the tab -->
+			<td> <img src= "<?php echo $row[$count++]; ?>" width="150" height = "150" </td>
         </tr>
         <?php } ?>
     </tbody>
@@ -64,6 +67,14 @@
  mysqli_free_result($result);
  ?>
  </table>
+ </div>
+ 
+ <div class="container">
+  <h3>The camera display from the robot goes here:</h3>
+	</div>
+
+ <div>
+    <!--- Div for camera display from the robot --> 
  </div>
 </body>
 </html>
