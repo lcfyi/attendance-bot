@@ -40,12 +40,7 @@ for key, value in newFaces.items():
     #use queues to send info to other process
     encodingToStore = face_recognition.face_encodings(value)[0]
     print("successfully encoded")
-    #print("KeyType = ", type(key))
-    
-    #print(encodingToStore.tostring())
-    #stringtopass = "".join(chr(x) for x in bytearray(encodingToStore))
-    #print(stringtopass)
-    mycursor.execute("UPDATE student_info SET Encoding = '" + base64.b64encode(encodingToStore).decode('utf-8') + "' WHERE studentID = " + str(key))
+    mycursor.execute("UPDATE student_info SET Encoding = %s WHERE studentID = %s", (encodingToStore.tobytes(), key))
     print("committing")
     mydb.commit()
 
