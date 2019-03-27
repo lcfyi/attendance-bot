@@ -25,7 +25,7 @@ class Robot_Control:
 		self._setLeft(self.straight_val)
 		self._setRight(-1 * self.straight_val)
 
-	def self.goBack(self):
+	def goBack(self):
 		self._setLeft(-1 * self.straight_val)
 		self._setRight(self.straight_val)
 
