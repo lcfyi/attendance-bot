@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>OscarEfe.com</title>
+    <title>RoboAttendance.com</title>
     <link rel="stylesheet" href="css/bootstrap.min.css">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
@@ -20,12 +20,11 @@
  <?php
  $db_host = 'localhost';
  $db_user = 'root';
- $db_pwd = 'samkayisi';
  
- $database = '291p1testdb';
- $table = 'cridentials';
+ $database = 'students';
+ $table = 'student_info';
  
- $con = mysqli_connect($db_host, $db_user, $db_pwd, $database);
+ $con = mysqli_connect($db_host, $db_user,"", $database);
  if (!$con)
      die("Can't connect to database");
  
@@ -53,12 +52,16 @@
         {
         ?>
         <tr>
-            <?php for($count =0; $count<$fields_num-1; $count++){ ?>
+            <?php for($count =0; $count<3; $count++){ ?>
                 <td><?php echo $row[$count] ?></td>
             <?php } ?> 
 			<!---Fix image dimension so that it is resized according to display size of the tab -->
-			<td> <img src= "<?php echo $row[$count++]; ?>" width="150" height = "150" </td>
-        </tr>
+			<td> <img src= "<?php echo "http://cpen291-16.ece.ubc.ca/photos/" . $row[$count++]; ?>" width="150" height = "150" </td>
+            <?php for($count=4; $count<$fields_num; $count++){ ?>
+                <td><?php echo $row[$count] ?></td>
+            <?php } ?> 
+        
+</tr>
         <?php } ?>
     </tbody>
 
