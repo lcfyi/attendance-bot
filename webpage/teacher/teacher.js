@@ -33,7 +33,7 @@ function validate(){
 
 function checkuser(){
     if(validate())
-    window.location.href = '../main/main.html';
+    window.location.href = '../main/display_test.php';
 }
 
 function switching(){
