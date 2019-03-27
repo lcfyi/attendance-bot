@@ -1,4 +1,6 @@
+var canvas = document.getElementById('canvas');
 var video = document.getElementById('video');
+var context = canvas.getContext('2d');
 
 navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUser ||
 navigator.mozGetUserMedia || navigator.msGetUserMedia;
@@ -16,16 +18,7 @@ function throwError(e){
     alert(e.name);
 }
 
-function switching(){
-    var p = document.getElementById('status');
-    p.innerHTML = "Authorized";
-    p.style.backgroundColor = "#008000";
-    p.style.borderColor = "#008000";   
-
-    var p = document.getElementById('door');
-    p.innerHTML = "Open";
-    p.style.backgroundColor = "#008000";
-    p.style.borderColor = "#008000";  
-    
-    document.getElementById('patrick').innerHTML = "Congrats!";
-}
+document.getElementById("snap").addEventListener("click", function() {
+    context.drawImage(video, 20, 20, 365, 330);
+    document.getElementById('patrick').innerHTML = "Awesome!";
+});
