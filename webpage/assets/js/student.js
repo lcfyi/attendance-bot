@@ -1,21 +1,35 @@
-var canvas = document.getElementById('canvas');
-var video = document.getElementById('video');
-var context = canvas.getContext('2d');
-
 navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUser ||
 navigator.mozGetUserMedia || navigator.msGetUserMedia;
 
-if(navigator.getUserMedia){
-    navigator.getUserMedia({video:true},streamWebCam,throwError);
-}
+init = () => {
+    if (navigator.getUserMedia) {
+        navigator.getUserMedia({video: {width: {ideal: 2048}, height: {ideal: 2048}, facingMode: "user"}}, (e) => {
+            // Successfully opened stream
+            let video = document.getElementById('video');
+            video.srcObject = e;
+            video.play();
+        },
+        (e) => {
+            // Error opening the stream
+            alert(e.name);
+        });
+    }
 
-function streamWebCam(stream){
-    video.srcObject=stream;
-    video.play();
-}
-
-function throwError(e){
-    alert(e.name);
+    document.getElementById("snap").addEventListener("click", (e) => {
+        // Grab everything we need
+        let video = document.getElementById('video');
+        let canvas = document.getElementById('canvas');
+        let context = canvas.getContext('2d');
+        // Set the element properties, as they're 0 right now
+        canvas.height = video.videoHeight;
+        canvas.width = video.videoWidth;
+        // Draw 1:1 of the video to the canvas
+        context.drawImage(video, 0, 0, video.videoWidth, video.videoHeight);
+        // Set our hidden element to the image
+        let img = document.getElementById('stuImg');
+        // Append the data
+        img.value = canvas.toDataURL();
+    });
 }
 
 requestDbUpdate = () => {
@@ -30,26 +44,19 @@ requestDbUpdate = () => {
             }
         };
         // Open the POST request
-        xml.open("POST", window.location.href + "/request_db_update.php");
+        xml.open("POST", "request_db_update.php");
         // Send the POST request
         let form = new FormData(document.getElementById("formContent"));
         xml.send(form);
     }
 }
 
-document.getElementById("snap").addEventListener("click", function() {
-    context.drawImage(video, 20, 20, 365, 330);
-    document.getElementById('patrick').innerHTML = "Awesome!";
-    let img = document.getElementById('stuImg');
-    img.value = canvas.toDataURL();
-});
-
 validateForm = () => {
     let stuID = document.forms['formContent']['stuID'];
     let stuName = document.forms['formContent']['stuName'];
     let lgPhrase = document.forms['formContent']['lgPhrase'];
     let stuImg = document.forms['formContent']['stuImg'];
-    let formStatus = document.getElementById('formStatus');
+    let formStatus = document.getElementById('status');
     let valid = true;
     let retVals = [];
     if (stuID.value === "" || isNaN(stuID.value)) {

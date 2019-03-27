@@ -24,9 +24,12 @@
 
         $sql_query = "SELECT * FROM student_info WHERE Needs_Update = '1' 
                 AND Login_Phrase = '$lgPhrase'";
+        
+        // Filename 
+        $filename = $stuID . ".png";
         // Update phrase
   	    $sql_update = "UPDATE student_info
-            	SET studentID = '$stuID', Name = '$stuName', Photo = '$target', Needs_Update = '0'
+            	SET studentID = '$stuID', Name = '$stuName', Photo = '$filename', Needs_Update = '0'
                 WHERE Login_Phrase = '$lgPhrase' AND Needs_Update = 1";
     
     // Store the image in place, if successful then do additional stuff
