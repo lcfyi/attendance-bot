@@ -32,35 +32,43 @@
   </div>
 </nav>
 
-
 <video width="400" height="400" id = "video" ></video>
 <button type="button" class="btn btn-light" id="snap">Take Photo</button>
-<button type="button" class="btn btn-success" id = "submit">Submit!</button>
+<!-- <button type="button" class="btn btn-success" id = "submit">Submit!</button> -->
 <canvas id="canvas" width="400" height="320"></canvas>
-
+<div id="content">
+  <form id="formContent" onsubmit="return false;">
+      
 <div class="input-group input-group-lg" id="ID">
   <div class="input-group-prepend">
     <span class="input-group-text" id="basic-addon1">@</span>
   </div>
-  <input type="text" style="width:50px;" class="form-control" placeholder="Student ID" aria-label="Username" aria-describedby="basic-addon1">
+  <input type="text" name = "stuID" style="width:50px;" class="form-control" placeholder="Student ID" aria-label="Username" aria-describedby="basic-addon1">
 </div>
 
 <div class="input-group input-group-lg" id="Name">
   <div class="input-group-prepend">
     <span class="input-group-text" id="basic-addon1">@</span>
   </div>
-  <input type="text" style="width:50px;" class="form-control" placeholder="First Name, Last Name" aria-label="Username" aria-describedby="basic-addon1">
+  <input type="text" name = "stuName" style="width:50px;" class="form-control" placeholder="First Name, Last Name" aria-label="Username" aria-describedby="basic-addon1">
 </div>
 
 <div class="input-group input-group-lg" id="Phrase">
   <div class="input-group-prepend">
     <span class="input-group-text" id="basic-addon1">@</span>
   </div>
-  <input type="text" style="width:50px;" class="form-control" placeholder="Login Phrase" aria-label="Username" aria-describedby="basic-addon1">
+  <input type="text" name = "lgPhrase" style="width:50px;" class="form-control" placeholder="Login Phrase" aria-label="Username" aria-describedby="basic-addon1">
 </div>
 
+<input id="stuImg" type="hidden" name="image">
+<div>
+  	<button type="submit" class="btn btn-success" onclick="requestDbUpdate()">POST</button>
+</div>
+</form>
+</div>
+<div id="status"></div>
 
-
+<div id="formStatus"></div>
 
 
 <p id = 'patrick'> Welcome! </p>
