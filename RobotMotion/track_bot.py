@@ -66,13 +66,14 @@ if __name__ == "__main__":
         while True:
             Robot.checkTrack()
             if Robot.status == "stopped":
-            	current = time.perf_counter()
-            	while time.perf_counter() - current < 2:
-            		pass
-            	Robot.direction *= -1
-            	Robot.goStraight(Robot.direction)
-				
-			Robot.scan()
+                current = time.perf_counter()
+                while time.perf_counter() - current < 2:
+            	    pass
+            	
+                Robot.direction *= -1
+                Robot.goStraight()
+	    
+            Robot.scan()
 
     except KeyboardInterrupt:
         GPIO.cleanup() 
