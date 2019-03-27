@@ -29,7 +29,7 @@
      die("Can't connect to database");
  
  // sending query
- $result = mysqli_query($con,"SELECT * FROM {$table}");
+ $result = mysqli_query($con,"SELECT `studentID`, `Name`, `Present`, `Photo`,`Login_Phrase`, `Needs_Update`FROM {$table}");
  if (!$result) {
      die("Query to show fields from table failed");
  }
