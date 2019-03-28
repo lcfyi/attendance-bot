@@ -75,7 +75,7 @@ validateForm = () => {
         valid = false;
         retVals.push("image");
     }
-    let retStr = "Invalid ";
+    let retStr = "<div class='alert alert-danger'>Invalid ";
     for (let i = 0; i < retVals.length; i++) {
         if (i === 0) {
             retStr += retVals[i];
@@ -83,7 +83,7 @@ validateForm = () => {
             retStr += ", " + retVals[i];
         }
     }
-    retStr += ".";
+    retStr += ".</div>";
     if (!valid) {
         formStatus.innerHTML = retStr;
     }

@@ -14,7 +14,7 @@ requestNewDbEntry = () => {
     xml.onreadystatechange = function() {
         if (this.status === 200 && this.readyState === 4) {
             // Success, print the secret to the status div
-            document.getElementById("status").innerHTML = this.responseText;
+            document.getElementById("secretStatus").innerHTML = this.responseText;
         }
     }
     // Call our create_new_db_entry.php endpoint
@@ -23,6 +23,24 @@ requestNewDbEntry = () => {
     xml.setRequestHeader("content-type", "application/x-www-form-urlencoded");
     // Send the payload with requestSecret
     xml.send("requestSecret=true");
+}
+
+requestClearPresent = () => {
+    // No validation necessary for this function since we assume
+    // the teacher is not malicious
+    let xml = new XMLHttpRequest();
+    xml.onreadystatechange = function() {
+        if (this.status === 200 && this.readyState === 4) {
+            // Success, print the secret to the status div
+            document.getElementById("clearStatus").innerHTML = this.responseText;
+        }
+    }
+    // Call our create_new_db_entry.php endpoint
+    xml.open("POST", "clear_present_flag.php");
+    // We have to set the header since we don't have anything else controlling it
+    xml.setRequestHeader("content-type", "application/x-www-form-urlencoded");
+    // Send the payload with requestSecret
+    xml.send("requestClear=true");
 }
 
 requestPresent = () => {

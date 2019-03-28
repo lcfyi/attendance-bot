@@ -1,13 +1,25 @@
-/* Made with love by Mutiullah Samim*/
-
 @import url('https://fonts.googleapis.com/css?family=Numans');
 
-html,body{
-/* background-image: url('../src/login.jpg'); */
-background-size: cover;
-background-repeat: no-repeat;
-height: 100%;
-font-family: 'Numans', sans-serif;
+html, body {
+    /* background-image: url('../imgs/login.jpg'); */
+    background-size: cover;
+    background-repeat: no-repeat;
+    height: 100%;
+    font-family: 'Numans', sans-serif;
+}
+
+#video {
+    /* position: absolute; */
+    /* TODO change based on media queries */
+    width: 100%;
+    height: auto;
+    /* left:7%; */
+    /* top:2%; */
+}
+
+#canvas {
+    width: 100%;
+    height: auto;
 }
 
 /* This container is necessary to resize our images */
@@ -34,4 +46,8 @@ a:hover>div {
     position: absolute;
     display: block;
     z-index: 1;
+}
+
+.status {
+    margin: 0 0 0 0;
 }
