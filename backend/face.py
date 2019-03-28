@@ -46,7 +46,6 @@ import os
 PROCESSES = []
 THREADS = []
 RAW_FRAME = None
-PROCESSED_FRAME = None
 
 # This function runs in a thread concurrent to the main websocket handler 
 # to do face recognition. It can take its time
@@ -77,20 +76,18 @@ def face_recognition_thread(dictionary, signal):
 
     # Global frame object
     global RAW_FRAME
-    global PROCESSED_FRAME
     while signal.is_set():
         if RAW_FRAME is not None:
-            # Set processed to false while we process it
-            PROCESSED_FRAME = None
             # Make a copy of the current frame to do stuff with
-            curr_frame = copy.deepcopy(RAW_FRAME)
+            # curr_frame = copy.deepcopy(RAW_FRAME)
             # Create a dictionary for matches
             face_names = []
             face_locations = []
+            rgb_frame = cv2.cvtColor(RAW_FRAME, cv2.COLOR_BGR2RGB)
             # Do the encoding logic
-            face_locations = face_recognition.face_locations(curr_frame)
+            face_locations = face_recognition.face_locations(rgb_frame)
             # This encodes each face found with the above expression
-            face_encodings = face_recognition.face_encodings(curr_frame, face_locations)
+            face_encodings = face_recognition.face_encodings(rgb_frame, face_locations)
             
             # Get the unmatched faces
             if len(face_locations) != 0:
@@ -105,22 +102,6 @@ def face_recognition_thread(dictionary, signal):
                         name = unmatched_faces[first_idx][0]
                     # Append a name to the location
                     updatePresent(name)
-
-                # Done with logic, draw boxes
-                for (top, right, bottom, left), name in zip(face_locations, face_names):
-                    # Draw a box around the face
-                    cv2.rectangle(curr_frame, (left, top), (right, bottom), (0, 0, 255), 2)
-
-                    # Draw a label with a name below the face
-                    cv2.rectangle(curr_frame, (left, bottom - 35), (right, bottom), (0, 0, 255), cv2.FILLED)
-                    font = cv2.FONT_HERSHEY_DUPLEX
-                    cv2.putText(curr_frame, name, (left + 6, bottom - 6), font, 1.0, (255, 255, 255), 1)
-                
-                # Set the frame as processed
-                PROCESSED_FRAME = curr_frame
-            else:
-                # We skip all the processing since no face locations
-                PROCESSED_FRAME = curr_frame
 
 
 # This process handles all the update and encoding functionality of the database,
@@ -194,29 +175,45 @@ def polling_process(dictionary):
                 pass
 
     syncEncoding()
+    curr_time = now()
     while True:
-        nap(5)
-        # If our rate limit has been exceeded, do stuff
+        if now() - curr_time < 5:
+            continue
+            # If our rate limit has been exceeded, do stuff
         updateEncodings()
         syncEncoding()
+        curr_time = now()
 
-# TODO add more handlers for different sockets, and define
-# them in our httpd-custom.conf, which we will store in
-# /opt/lampp/etc
-async def variety_handler(websocket, path):
+async def rpi_handler(websocket, path):
     global RAW_FRAME
-    print("Websocket opened")
+    print("RPi frame socket opened")
     try:
         while True:
-            #receive frame
-            RAW_FRAME = np.frombuffer(await websocket.recv(), dtype=np.uint8).reshape((480, 640, 3))
-            
-            #send frame to webpage if there is a request from client
-            #await websocket.send(frame.tobytes())
-
+            await asyncio.sleep(0.033)
+            val = None
+            try:
+                val = await asyncio.wait_for(websocket.recv(), 1)
+            except asyncio.TimeoutError:
+                pass
+            if val is not None:
+                RAW_FRAME = np.frombuffer(val, dtype=np.uint8).reshape((480, 640, 3))
     except websockets.exceptions.ConnectionClosed:
-        RAW_FRAME = None
-        print("Websocket closed")
+        print("RPi frame socket closed")
+
+async def client_handler(websocket, path):
+    print("Raw frame socket opened")
+    try:
+        while True:
+            if RAW_FRAME is not None:
+                await asyncio.sleep(0.01)
+                encode_param = [int(cv2.IMWRITE_JPEG_QUALITY), 15] # Encode at 15%
+                f = cv2.imencode('.jpg', RAW_FRAME, encode_param)[1]
+                try:
+                    await asyncio.wait_for(websocket.send(f.tobytes()), 1)
+                except asyncio.TimeoutError:
+                    pass
+    except websockets.exceptions.ConnectionClosed:
+        print("Raw frame socket closed")
 
 def main(signal):
     # Process for our database update functionality
@@ -238,8 +235,10 @@ def main(signal):
     # Set up the server that will handle all socket connections, will run
     # in the main process
     print("Setting up socket")
-    start_server = websockets.serve(ws_handler=variety_handler, host='0.0.0.0', port=3001)
-    asyncio.get_event_loop().run_until_complete(start_server)
+    rpi = websockets.serve(ws_handler=rpi_handler, host='0.0.0.0', port=3001)
+    asyncio.get_event_loop().run_until_complete(rpi)
+    cli = websockets.serve(ws_handler=client_handler, host='0.0.0.0', port=3002)
+    asyncio.get_event_loop().run_until_complete(cli)
     asyncio.get_event_loop().run_forever()
     
 
