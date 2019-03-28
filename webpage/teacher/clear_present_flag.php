@@ -8,9 +8,9 @@
     if (isset($_POST['requestClear'])) {
         $sql_query = "UPDATE student_info SET Present = '0'";
         if (mysqli_query($db, $sql_query)) {
-            echo "Success! Attendance cleared.";
+            echo "<div class='alert alert-primary status'>Success! Attendance cleared.</div>";
         } else {
-            echo "Query failed to process. Try again?";
+            echo "<div class='alert alert-danger status'>Query failed to process. Try again?</div>";
         }
     }
 ?>

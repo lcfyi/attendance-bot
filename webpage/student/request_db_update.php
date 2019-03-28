@@ -38,21 +38,21 @@
                 if(file_put_contents($target, base64_decode($stuPhotoData))) {
                     // Create the image, if the query was successful
                     if (mysqli_query($db, $sql_update)) {
-                        echo "Success!";
+                        echo "<div class='alert alert-primary'>Success!</div>";
                     } else {
-                        echo "Database update error, potentially duplicate student ID?";
+                        echo "<div class='alert alert-danger'>Database update error, potentially duplicate student ID?</div>";
                     }
                 // File upload failed, delete the file if it's been made
                 } else {
                     if (file_exists($target)) {
                         unlink($target);
-                        echo "File upload failed, creation reverted.";
+                        echo "<div class='alert alert-danger'>File upload failed, creation reverted.</div>";
                     } else {
-                        echo "File upload failed, no file created.";
+                        echo "<div class='alert alert-danger'>File upload failed, no file created.</div>";
                     }
                 }
             } else {
-                echo "Secret does not exist or update not necessary.";
+                echo "<div class='alert alert-warning'>Secret does not exist or update not necessary.</div>";
             }
         }
     }

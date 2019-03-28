@@ -10,9 +10,9 @@
         $sql_query = "INSERT INTO student_info (Login_Phrase)
                         VALUES ('$secret')";
         if (mysqli_query($db, $sql_query)) {
-            echo "Success! Secret is <i>" . $secret . "</i>";
+            echo "<div class='alert alert-primary status'>Success! Secret is <i>" . $secret . "</i></div>";
         } else {
-            echo "Failed to insert secret";
+            echo "<div class='alert alert-danger status'>Failed to insert secret</div>";
         }
     }
 
