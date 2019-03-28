@@ -65,7 +65,7 @@ requestUnclaimed = () => {
  * json.length == headers.length. Does not check malformity
  */
 tableHelper = (headers, json) => {
-    let body = "<table class='table table-light'><thead><tr>";
+    let body = "<table class='table table-striped'><thead><tr>";
     for (let i = 0; i < headers.length; i++) {
         body += "<th scope='col'>" + headers[i] + "</th>";
     }
