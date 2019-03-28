@@ -1,5 +1,5 @@
 init = async () => {
-    let constraints = {video: {width: {ideal: 2048}, height: {ideal: 2048}, facingMode: {ideal: "user"}}};
+    let constraints = {video: {width: {ideal: 2048}, height: {ideal: 2048}, facingMode: "user"}};
     navigator.mediaDevices.getUserMedia(constraints).then((stream) => {
         let video = document.getElementById('video');
         video.srcObject = stream;
