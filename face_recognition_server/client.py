@@ -41,7 +41,7 @@ def camera(signal):
 def websocket(signal):
     async def oof():
         global coords
-        async with websockets.connect("ws://cpen291-16.ece.ubc.ca:443") as websocket:
+        async with websockets.connect("ws://cpen291-16.ece.ubc.ca/socket.io/") as websocket:
             while signal.is_set():
                 # await asyncio.sleep(0.033) # 30 fps
                 # Send the frame
@@ -49,8 +49,6 @@ def websocket(signal):
                     # print("Sending frame")
                     await websocket.send(image.tobytes())
                     # Receive the processed coordinates
-                    coords = await websocket.recv()
-
     asyncio.run(oof())
 
 def main(signal):

@@ -1,0 +1,256 @@
+# For this code, take a look at /face_recognition_server/server.py
+# and adapt the code within that folder so that your poll.py process
+# runs parallel to that code, and updates the encoding whenever necessary
+
+# (You'll have to change it from two arrays to a dictionary, would make
+# your life a lot easier) But what you need it to do is basically compare
+# the existing dictionary in memory as to whether or not a particular encoding
+# you grabbed from memory exists in the dictionary. If not, add it.
+# Since studentIDs are unique, you can use that as the key pretty reliably.
+
+
+# In addition to that, you'll have to adapt the code in 
+# /face_recognition_server/server.py to update the database whenever a
+# face is detected. We should decide if we want to store date/time or just a 
+# boolean.
+
+
+# The last thing we need to do is set up a forwarding server for the Pi 
+# to the teacher front-end. This part shouldn't be too difficult, though
+# we may have to get a little crafty with the way we handle the websocket
+# since we don't have enough ports open to us.
+#
+# | RASPBERRY PI | <-----------> | VM | <-----------> | CLIENT(S) |
+#
+# From above, the VM should just listen on a particular port (443 in our
+# case), and wait for a special packet to determine what to do.
+#
+# Examples
+# Pi (I am pi) --> VM ==> forward camera stream to another socket
+# Client (I am client) --> VM ==> VM sends camera stream to the socket
+
+import sys
+import face_recognition
+import asyncio
+import websockets
+import numpy as np
+import multiprocessing
+import threading
+import copy
+import cv2
+from time import perf_counter as now
+from time import sleep as nap
+import mysql.connector
+import os
+
+PROCESSES = []
+THREADS = []
+RAW_FRAME = None
+PROCESSED_FRAME = None
+
+# This function runs in a thread concurrent to the main websocket handler 
+# to do face recognition. It can take its time
+def face_recognition_thread(dictionary, signal):
+    print("Face recognition thread started")
+    # Connect to the database, since we'll need to update on face detection
+    # Create a helper function to mark the student as present
+    def updatePresent(stuID):
+        if stuID != "Unknown":
+            mydb = mysql.connector.connect(
+                host = "localhost",
+                user = "root",
+                database = "students",
+                use_pure = True # This is necessary to avoid encoding errors
+            )
+            print("Face recoginition DB connection successful")
+            print("Updating entry for ", stuID)
+            # Update the table
+            cursor = mydb.cursor()
+            args = (stuID,)
+            cursor.execute("UPDATE student_info SET Present='1' WHERE studentID = %s", args)
+            mydb.commit()
+            # Update the dictionary by mutating it
+            temp = dictionary[stuID]
+            dictionary.pop(stuID)
+            temp['seen'] = 1
+            dictionary[stuID] = temp
+
+    # Global frame object
+    global RAW_FRAME
+    global PROCESSED_FRAME
+    while signal.is_set():
+        if RAW_FRAME is not None:
+            # Set processed to false while we process it
+            PROCESSED_FRAME = None
+            # Make a copy of the current frame to do stuff with
+            curr_frame = copy.deepcopy(RAW_FRAME)
+            # Create a dictionary for matches
+            face_names = []
+            face_locations = []
+            # Do the encoding logic
+            face_locations = face_recognition.face_locations(curr_frame)
+            # This encodes each face found with the above expression
+            face_encodings = face_recognition.face_encodings(curr_frame, face_locations)
+            
+            # Get the unmatched faces
+            if len(face_locations) != 0:
+                unmatched_faces = [(a, b['encoding']) for a, b in dictionary.items() if b['seen'] != 1]
+                known_encodings = [f[1] for f in unmatched_faces]
+                for face_encoding in face_encodings:
+                    matches = face_recognition.compare_faces(known_encodings, face_encoding)
+                    name = "Unknown"
+                    # We found a match
+                    if True in matches:
+                        first_idx = matches.index(True)
+                        name = unmatched_faces[first_idx][0]
+                    # Append a name to the location
+                    updatePresent(name)
+
+                # Done with logic, draw boxes
+                for (top, right, bottom, left), name in zip(face_locations, face_names):
+                    # Draw a box around the face
+                    cv2.rectangle(curr_frame, (left, top), (right, bottom), (0, 0, 255), 2)
+
+                    # Draw a label with a name below the face
+                    cv2.rectangle(curr_frame, (left, bottom - 35), (right, bottom), (0, 0, 255), cv2.FILLED)
+                    font = cv2.FONT_HERSHEY_DUPLEX
+                    cv2.putText(curr_frame, name, (left + 6, bottom - 6), font, 1.0, (255, 255, 255), 1)
+                
+                # Set the frame as processed
+                PROCESSED_FRAME = curr_frame
+            else:
+                # We skip all the processing since no face locations
+                PROCESSED_FRAME = curr_frame
+
+
+# This process handles all the update and encoding functionality of the database,
+# all wrapped up in a process to make it easier for us
+def polling_process(dictionary):
+    print("Polling process started")
+    def syncEncoding():
+        # Start a new DB connection
+        mydb = mysql.connector.connect(
+            host = "localhost",
+            user = "root",
+            database = "students",
+            use_pure = True # This is necessary to avoid encoding errors
+        )
+        print("Synchronizing encodings")
+        # Grab the student ID and encodings that exist in the table
+        cursor = mydb.cursor()
+        cursor.execute("SELECT studentID, Encoding, Present FROM student_info WHERE NOT ISNULL(Encoding)")
+        # Fetch the result
+        results = cursor.fetchall()
+        for row in results:
+            # If the key isn't in the dictionary, add it
+            if row[0] not in dictionary:
+                # Reshape as the original numpy array
+                dictionary[row[0]] = {"encoding": np.frombuffer(row[1], dtype=np.float64).reshape((128,)) \
+                    , "seen": row[2]}
+            # Or if the present state does not match the seen state, update it
+            elif row[2] != dictionary[row[0]]['seen']:
+                dictionary.pop(row[0])
+                dictionary[row[0]] = {"encoding": np.frombuffer(row[1], dtype=np.float64).reshape((128,)) \
+                    , "seen": row[2]}
+    
+    def updateEncodings():
+        # Start a new DB connection
+        mydb = mysql.connector.connect(
+            host = "localhost",
+            user = "root",
+            database = "students",
+            use_pure = True # This is necessary to avoid encoding errors
+        )
+        print("Updating encodings")
+        # Grab the entries with photos but do not otherwise have an encoding
+        cursor = mydb.cursor()
+        cursor.execute("SELECT studentID, Photo FROM student_info WHERE ISNULL(Encoding) AND NOT ISNULL(Photo)")
+        results = cursor.fetchall()
+        # Change the working directory so we can grab the images
+        try:
+            os.chdir("/opt/lampp/htdocs/photos")
+        except FileNotFoundError:
+            print("FileNotFoundError")
+            return
+        # Process the results
+        for row in results:
+            print(row)
+            try:
+                img = face_recognition.load_image_file(row[1])
+                try:
+                    enc = face_recognition.face_encodings(img)[0]
+                    # Store the encoding (as bytes) into the database
+                    cursor.execute("UPDATE student_info SET Encoding = %s \
+                                WHERE studentID = %s", (enc.tobytes(), row[0]))
+                    # Commit it
+                    mydb.commit()
+                except IndexError:
+                    print("No face found, photo needs update")
+                    cursor.execute("UPDATE student_info SET Photo=%s, \
+                        Needs_Update=%s WHERE studentID = %s", (None, "1", row[0]))
+                    mydb.commit()
+            except FileNotFoundError:
+                print("File not found for ", row[1])
+                pass
+
+    syncEncoding()
+    while True:
+        nap(5)
+        # If our rate limit has been exceeded, do stuff
+        updateEncodings()
+        syncEncoding()
+
+# TODO add more handlers for different sockets, and define
+# them in our httpd-custom.conf, which we will store in
+# /opt/lampp/etc
+async def variety_handler(websocket, path):
+    global RAW_FRAME
+    print("Websocket opened")
+    try:
+        while True:
+            #receive frame
+            RAW_FRAME = np.frombuffer(await websocket.recv(), dtype=np.uint8).reshape((480, 640, 3))
+            
+            #send frame to webpage if there is a request from client
+            #await websocket.send(frame.tobytes())
+
+    except websockets.exceptions.ConnectionClosed:
+        RAW_FRAME = None
+        print("Websocket closed")
+
+def main(signal):
+    # Process for our database update functionality
+    manager = multiprocessing.Manager()
+    dic = manager.dict()
+    poll_handler = multiprocessing.Process(target=polling_process, args=(dic,))
+    PROCESSES.append(poll_handler)
+
+    # Our single thread, organized by the global array
+    frt = threading.Thread(target=face_recognition_thread, args=(dic, signal))
+    THREADS.append(frt)
+
+    # Start our processes and threads
+    for t in THREADS:
+        t.start()
+    for p in PROCESSES:
+        p.start()
+
+    # Set up the server that will handle all socket connections, will run
+    # in the main process
+    print("Setting up socket")
+    start_server = websockets.serve(ws_handler=variety_handler, host='0.0.0.0', port=3001)
+    asyncio.get_event_loop().run_until_complete(start_server)
+    asyncio.get_event_loop().run_forever()
+    
+
+if __name__ == "__main__":
+    try:
+        signal = threading.Event()
+        signal.set()
+        main(signal)
+    except KeyboardInterrupt:
+        signal.clear()
+        for t in THREADS:
+            t.join()
+        for p in PROCESSES:
+            p.terminate()

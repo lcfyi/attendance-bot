@@ -14,7 +14,7 @@ init = async () => {
             context.fillRect(0, 0, canvas.width, canvas.height);
         });
     }).catch((error) => {
-        alert(error.name);
+        window.location.href = "https://cpen291-16.ece.ubc.ca/student/";
     });
 
     document.getElementById("snap").addEventListener("click", (e) => {
