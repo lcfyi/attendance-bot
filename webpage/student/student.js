@@ -8,6 +8,15 @@ init = () => {
             let video = document.getElementById('video');
             video.srcObject = e;
             video.play();
+            video.addEventListener('loadeddata', (e) => {
+                let video = document.getElementById('video');
+                let canvas = document.getElementById('canvas');
+                let context = canvas.getContext('2d');
+                canvas.height = video.videoHeight;
+                canvas.width = video.videoWidth;
+                context.fillStyle = 'grey';
+                context.fillRect(0, 0, canvas.width, canvas.height);
+            });
         },
         (e) => {
             // Error opening the stream
