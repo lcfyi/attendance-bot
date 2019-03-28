@@ -1,72 +1,81 @@
 <!DOCTYPE html>
 <html>
-  <head>
-      <title>Student Signup</title>
-      <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
-      <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css" integrity="sha384-mzrmE5qonljUremFsqc01SB46JvROS7bZs3IO2EmfFsd15uHvIt+Y8vEf7N7fWAU" crossorigin="anonymous">
-      <link rel="stylesheet" type="text/css" href="../assets/css/student.css">
-      <meta name="viewport" content="width=device-width, initial-scale=1">
-      <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
-      <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
-      <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>  
-      <script src = "../assets/js/student.js"></script>
-  </head>
-  <body onload="init()">
-    <!-- Navbar stuff -->
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
-      <a class="navbar-brand" href="#">
-        <img src="../src/logo.png" width="30" height="30" alt="">
-      </a>
-      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-      </button>
-      <div class="collapse navbar-collapse" id="navbarNav">
-        <ul class="navbar-nav">
-          <li class="nav-item">
-            <a class="nav-link" href="../">Home</a>
-          </li>
-          <li class="nav-item active">
-            <a class="nav-link" href="/">Student <span class="sr-only">(current)</span></a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="../teacher/">Teacher</a>
-          </li>
-        </ul>
-      </div>
-    </nav>
-    
-    <!-- Form stuff -->
-    <div class="container">
-      <div class="panel panel-default">
-        <div class="panel-body">
-          <form id="formContent" onsubmit="return false;">
-            <!-- Student ID form element -->
-            <div class="form-group">
-              <label for="stuID">Student ID:</label>
-              <input type="text" name="stuID" class="form-control responsive-width" placeholder="Enter Student ID">
+    <head>
+        <title>Student Signup</title>
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+        <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css" integrity="sha384-mzrmE5qonljUremFsqc01SB46JvROS7bZs3IO2EmfFsd15uHvIt+Y8vEf7N7fWAU" crossorigin="anonymous">
+        <link rel="stylesheet" type="text/css" href="student.css">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>  
+        <script src = "student.js"></script>
+    </head>
+    <body onload="init()">
+        <!-- Navbar stuff -->
+        <nav class="navbar navbar-expand-lg navbar-light bg-light">
+            <a class="navbar-brand" href="#">
+                <img src="../assets/imgs/logo.png" width="30" height="30" alt="">
+            </a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav">
+                <li class="nav-item">
+                    <a class="nav-link" href="../">Home</a>
+                </li>
+                <li class="nav-item active">
+                    <a class="nav-link" href="/">Student <span class="sr-only">(current)</span></a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="../teacher/">Teacher</a>
+                </li>
+                </ul>
             </div>
-            <!-- Student name form element -->
-            <div class="form-group">
-              <label for="stuName">Student Name:</label>
-              <input type="text" name="stuName" class="form-control responsive-width" placeholder="Enter Student Name">
+        </nav>
+        
+        <!-- Form stuff -->
+        <div class="container">
+            <div class="row">
+                <div class="col-md">
+                    <form id="formContent" onsubmit="return false;">
+                        <!-- Student ID form element -->
+                        <div class="form-group">
+                        <label for="stuID">Student ID:</label>
+                        <input type="text" name="stuID" class="form-control responsive-width" placeholder="Enter Student ID">
+                        </div>
+                        <!-- Student name form element -->
+                        <div class="form-group">
+                        <label for="stuName">Student Name:</label>
+                        <input type="text" name="stuName" class="form-control responsive-width" placeholder="Enter Student Name">
+                        </div>
+                        <!-- Shared secret form element -->
+                        <div class="form-group">
+                        <label for="lgPhrase">Shared Secret:</label>
+                        <input type="text" name="lgPhrase" class="form-control responsive-width" placeholder="Enter Shared Secret">
+                        </div>
+                        <!-- Hidden image to be POST'd -->
+                        <input id="stuImg" type="hidden" name="image">
+                        <!-- Submit button -->
+                        <button type="submit" class="btn btn-success" onclick="requestDbUpdate()">POST</button>
+                        <button type="button" class="btn btn-light" id="snap">Take Photo</button>
+                        <!-- Status messages -->
+                        <br>
+                        <br>
+                        <div class="alert alert-primary" id="status">Enter info and take a photo, then submit.</div>
+                    </form>
+                </div>
             </div>
-            <!-- Shared secret form element -->
-            <div class="form-group">
-              <label for="lgPhrase">Shared Secret:</label>
-              <input type="text" name="lgPhrase" class="form-control responsive-width" placeholder="Enter Shared Secret">
+            <div class="row mt-4">
+                <div class="col-sm">
+                    <video id="video"></video>
+                    
+                </div>
+                <div class="col-sm">
+                    <canvas id="canvas"></canvas>
+                </div>
             </div>
-            <!-- Hidden image to be POST'd -->
-            <input id="stuImg" type="hidden" name="image">
-            <!-- Submit button -->
-            <button type="submit" class="btn btn-success" onclick="requestDbUpdate()">POST</button>
-          </form>
         </div>
-        <!-- Status messages -->
-        <div id="status"></div>
-      </div>
-      <video id="video"></video>
-      <button type="button" class="btn btn-light" id="snap">Take Photo</button>
-      <canvas id="canvas"></canvas>
-    </div>
-  </body>
+    </body>
 </html>

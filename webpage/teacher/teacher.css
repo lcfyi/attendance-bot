@@ -3,87 +3,35 @@
 @import url('https://fonts.googleapis.com/css?family=Numans');
 
 html,body{
-background-image: url('../src/login.jpg');
+/* background-image: url('../src/login.jpg'); */
 background-size: cover;
 background-repeat: no-repeat;
 height: 100%;
 font-family: 'Numans', sans-serif;
 }
 
-#header {
-    text-align: center;
-    color: rgb(170, 17, 43);  
+/* This container is necessary to resize our images */
+.imgContainer {
+    height: auto;
+    width: 300px;
+    right: 10vw;
 }
 
-.container{
-    height: 65%;
-    align-content: center;
+/* We further specify our image properties here */
+.imgContainer img {
+    width: 100%;
+    height: auto;
 }
 
-.card{
-    height: 370px;
-    margin-top: auto;
-    margin-bottom: auto;
-    width: 400px;
-    background-color: rgba(0,0,0,0.5) !important;
+/* Set the div to not display if not hovered on */
+a>div { 
+    display: none;
+    position: relative;
 }
 
-.social_icon span{
-    font-size: 60px;
-    margin-left: 10px;
-    color: #FFC312;
-}
-
-.social_icon span:hover{
-    color: white;
-    cursor: pointer;
-}
-
-.card-header h3{
-    color: white;
-}
-
-.social_icon{
+/* Show the div if hovered */
+a:hover>div {
     position: absolute;
-    right: 20px;
-    top: -45px;
-}
-
-.input-group-prepend span{
-    width: 50px;
-    background-color: #FFC312;
-    color: black;
-    border:0 !important;
-}
-
-input:focus{
-    outline: 0 0 0 0  !important;
-    box-shadow: 0 0 0 0 !important;
-
-}
-
-#loginBtn{
-    float: right;
-    border: #FFC312;
-    color: black;
-    background-color: #FFC312;
-    width: 100px;
-}
-
-#error{
-    color:rgb(233, 129, 10);
-    font-size: 20px;
-}
-
-#patrick{
-    color:rgb(214, 27, 136);
-    font-size:30px;
-    position: absolute;
-    right: 22%;
-    top: 50%;
-
-}
-.login_btn:hover{
-color: black;
-background-color: white;
+    display: block;
+    z-index: 1;
 }

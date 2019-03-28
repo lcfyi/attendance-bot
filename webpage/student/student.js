@@ -36,11 +36,9 @@ requestDbUpdate = () => {
     if (validateForm()) {
         let xml = new XMLHttpRequest();
         // Add an event listener to update
-        xml.onreadystatechange = (e) => {
-            if (xml.status === 200) {
-                console.log(xml.status);
-                console.log(xml.responseText);
-                document.getElementById("status").innerHTML = xml.responseText;
+        xml.onreadystatechange = function() {
+            if (this.status === 200 && this.readyState === 4) {
+                document.getElementById("status").innerHTML = this.responseText;
             }
         };
         // Open the POST request
