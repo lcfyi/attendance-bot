@@ -46,24 +46,53 @@
                 </div>
             </div>
         </div>
-        <div class="row mt-4">
-            <div class="col-sm">
+        <div class="row">
+          <div class="col-sm">
+            <div class="row mt-4">
+              <div class="col-lg">
                 <div class="card">
                     <div class="card-body">
-                            <div class="h5 card-title"><b>Generate new secret</b></div>
-                            <p class="card-text">Click the 'generate' button to generate a new secret.</p>
-                        <strong><div class="h6" id="status"></div></strong>
+                        <div class="h5 card-title"><b>Generate new secret</b></div>
+                        <p class="card-text">Click the 'generate' button to generate a new secret.</p>
+                        <strong><div class="h6" id="secretStatus"></div></strong>
                         <br>
                         <button class="btn btn-success" onclick="requestNewDbEntry()">Generate</button>
                     </div>
                 </div>
+              </div>
             </div>
+            <div class="row mt-4">
+              <div class="col-lg">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="h5 card-title"><b>Clear attendance</b></div>
+                        <p class="card-text">Click the 'clear' button to clear the attendance list.</p>
+                        <strong><div class="h6" id="clearStatus"></div></strong>
+                        <br>
+                        <button class="btn btn-success" onclick="requestClearPresent()">Clear</button>
+                    </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-sm mt-4">
+              <div class="card">
+                  <div class="card-body">
+                      <div class="h5 card-title"><b>Camera</b></div>
+                  </div>
+              </div>
+          </div>
+        </div>
+        <div class="row mt-4">
             <div class="col-sm">
                 <div class="card">
                     <div class="card-body">
                         <div id="tableUnclaimed"></div>
                     </div>
                 </div>
+            </div>
+            <div class="col-sm">
+
             </div>
         </div>
     </div>
