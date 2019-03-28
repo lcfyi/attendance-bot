@@ -1,7 +1,7 @@
 @import url('https://fonts.googleapis.com/css?family=Numans');
 
 html,body{
-    background-image: url('../src/login.jpg');
+    /* background-image: url('../imgs/login.jpg'); */
     background-size: cover;
     background-repeat: no-repeat;
     height: 100%;
@@ -9,62 +9,16 @@ html,body{
     }
 
 
-#video{
-    position: absolute;
-    left:7%;
-    top:2%; 
+#video {
+    /* position: absolute; */
+    /* TODO change based on media queries */
+    width: 100%;
+    height: auto;
+    /* left:7%; */
+    /* top:2%; */
 }
 
-#patrick{
-    color:rgb(214, 27, 136);
-    font-size:30px;
-    position: absolute;
-    right: 22%;
-    top: 50%;
+#canvas {
+    width: 100%;
+    height: auto;
 }
-
-#snap{
-    position: absolute;
-    left:30%;
-    top:46%;
-    width:150px;
-    height:45px;
-}
-
-#canvas{
-    position: absolute;
-    left:40%;
-    top:6%;
-
-}
-
-#ID{
-    position: absolute;
-    width:300px;
-    left:20%;
-    top:55%;
-}
-
-#Name{
-    position: absolute;
-    width:400px;
-    left:20%;
-    top:64%;
-}
-
-#Phrase{
-    position: absolute;
-    width:400px;
-    left:20%;
-    top:73%;
-}
-
-#submit{
-    position: absolute;
-    left:20%;
-    top:82%;
-    width:200px;
-    font-size: 30px;
-    height:80px;
-}
-

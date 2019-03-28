@@ -1,21 +1,9 @@
 @import url('https://fonts.googleapis.com/css?family=Numans');
 
 html,body{
-    background-image: url('../src/home.jpg');
+    /* background-image: url('../src/home.jpg'); */
     background-size: cover;
     background-repeat: no-repeat;
     height: 100%;
     font-family: 'Numans', sans-serif;
-}
-
-#card{
-    position: absolute;
-    right: 7%;
-    top: 10%;
-}
-
-#slide{
-    position: absolute;
-    right: 7%;
-    bottom: 10%;
 }
