@@ -86,8 +86,6 @@ validateForm = () => {
     retStr += ".";
     if (!valid) {
         formStatus.innerHTML = retStr;
-    } else {
-        formStatus.innerHTML = "";
     }
     return valid;
 }
