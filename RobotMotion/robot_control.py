@@ -4,7 +4,7 @@ from adafruit_motorkit import MotorKit
 #inherited by robot to control over tracks, only need 90 degree turns
 class Robot_Control:
 
-	straight_val = 0.4
+	straight_val = 0.3
 	kit = MotorKit()
 	left_wheel = kit.motor2
 	right_wheel = kit.motor1
