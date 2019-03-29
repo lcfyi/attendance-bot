@@ -5,7 +5,7 @@ import multiprocessing
 import threading
 import numpy as np
 from time import perf_counter as now
-from .track_bot import TrackRobot as bot
+from track_bot import TrackRobot as bot
 import json
 
 THREADS = []

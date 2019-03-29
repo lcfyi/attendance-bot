@@ -1,7 +1,7 @@
-from .robot_control import Robot_Control
-from .optical_sensor import Optical_Sensor
+from robot_control import Robot_Control
+from optical_sensor import Optical_Sensor
 import time
-from .servo_control import Servo_Control as sc
+from servo_control import Servo_Control as sc
 
 class TrackRobot(Robot_Control):
     def __init__(self, dictionary):
