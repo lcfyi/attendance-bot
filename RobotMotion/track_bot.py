@@ -25,7 +25,7 @@ class TrackRobot(robot_control.Robot_Control):
 
     def changeAngles(self, max, min):
         for i in range(0, 3):
-            self.x[i] = (max - min)/4 * i
+            self.x[i] = (max - min)/3*i+min
 
     def servoTime(self, time):
         self.servo_time = time
