@@ -5,6 +5,26 @@ init = () => {
     // Set the intervals until forever
     setInterval(requestPresent, 3000);
     setInterval(requestUnclaimed, 3000);
+    // Set up the socket stream from the raspberry pi, open it
+    let uri = "ws://" + window.location.hostname + "/ws/client";
+    try {
+        sock = new WebSocket(uri);
+    } catch (err) {
+        window.location.href = "http://cpen291-16.ece.ubc.ca/teacher/";
+    }
+    sock.addEventListener('open', (e) => {
+        console.log("Opened")
+    });
+    // Add an event for when the socket messages us
+    sock.addEventListener('message', (e) => {
+        let camHolder = document.getElementById("camFeed");
+        let ctx = camHolder.getContext("2d");
+        let img = new Image();
+        img.src = URL.createObjectURL(e.data);
+        img.addEventListener('load', (e) => {
+            ctx.drawImage(img, 0, 0, camHolder.width, camHolder.height);
+        });
+    });
 }
 
 requestNewDbEntry = () => {
@@ -33,6 +53,9 @@ requestClearPresent = () => {
         if (this.status === 200 && this.readyState === 4) {
             // Success, print the secret to the status div
             document.getElementById("clearStatus").innerHTML = this.responseText;
+            setTimeout((e) => {
+                document.getElementById("clearStatus").innerHTML = "";
+            }, 3000);
         }
     }
     // Call our create_new_db_entry.php endpoint
