@@ -191,9 +191,10 @@ async def rpi_handler(websocket, path):
             val = None
             # Wait for the next frame, and set a timeout of 1 second
             try:
-                val = await asyncio.wait_for(websocket.recv(), 1)
+                val = await asyncio.wait_for(websocket.recv(), 2)
             except asyncio.TimeoutError:
                 val = None
+                return
             # If timed out, then we don't set the raw frame
             if val is not None:
                 # Otherwise, decode from bytes into an image for interpretation
@@ -215,9 +216,9 @@ async def client_handler(websocket, path):
                 f = cv2.imencode('.jpg', RAW_FRAME, encode_param)[1]
                 # Wait a maximum of 1 second for this call
                 try:
-                    await asyncio.wait_for(websocket.send(f.tobytes()), 1)
+                    await asyncio.wait_for(websocket.send(f.tobytes()), 2)
                 except asyncio.TimeoutError:
-                    pass
+                    return
     except websockets.exceptions.ConnectionClosed:
         pass
 

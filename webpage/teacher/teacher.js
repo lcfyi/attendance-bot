@@ -7,7 +7,7 @@ init = () => {
     // Set the intervals until forever
     setInterval(requestPresent, 3000);
     setInterval(requestUnclaimed, 3000);
-    setInterval(requestAll, 20000);
+    setInterval(requestAll, 3000);
     // Set up the socket stream from the raspberry pi, open it
     let uri = "ws://" + window.location.hostname + "/ws/client";
     try {
