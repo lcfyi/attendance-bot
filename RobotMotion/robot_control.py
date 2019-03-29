@@ -32,6 +32,10 @@ class Robot_Control:
 	def stop(self):
 		self._setLeft(0)
 		self._setRight(0)
+	
+	def changeSpeed(self, speed = 0.4):
+		if speed >= 0 and speed <=0.8:
+			Robot_Control.straight_val = speed
 
 	def _setLeft(self, val):
 
