@@ -47,6 +47,8 @@ PROCESSES = []
 THREADS = []
 RAW_FRAME = None
 
+param_data = {"3"}
+
 # This function runs in a thread concurrent to the main websocket handler 
 # to do face recognition. It can take its time
 def face_recognition_thread(dictionary, signal):
@@ -227,6 +229,11 @@ async def client_handler(websocket, path):
                     print("Raw timeout")
     except websockets.exceptions.ConnectionClosed:
         print("Raw frame socket closed")
+async def param_handler(websockets,path):
+    print("Param socket is opened")
+    param_data = await websockets.recv()
+
+
 
 def main(signal):
     # Process for our database update functionality
@@ -253,6 +260,8 @@ def main(signal):
     cli = websockets.serve(ws_handler=client_handler, host='0.0.0.0', port=3002)
     asyncio.get_event_loop().run_until_complete(cli)
     asyncio.get_event_loop().run_forever()
+    param = websockets.serve(ws_handler = param_handler, host ='0.0.0.0',port=3003)
+    asyncio.get_event_loop().run_until_complete(param)
     
 
 if __name__ == "__main__":
