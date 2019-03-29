@@ -15,23 +15,32 @@
     <!-- Navbar stuff -->
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
       <a class="navbar-brand" href="#">
-        <img src="/assets/imgs/logo.png" width="30" height="30" alt="">
+        <img src="../assets/imgs/logo.png" width="30" height="30" alt="">
       </a>
       <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
       </button>
       <div class="collapse navbar-collapse" id="navbarNav">
-        <ul class="navbar-nav">
-          <li class="nav-item">
-            <a class="nav-link" href="/">Home</a>
+
+        <ul class="navbar-nav mr-auto">
+          <li class="nav-item active">
+            <a class="nav-link" href="/">Home <span class="sr-only">(current)</span></a>
           </li>
           <li class="nav-item">
             <a class="nav-link" href="/student">Student</a>
           </li>
-          <li class="nav-item active">
-            <a class="nav-link" href="/teacher">Teacher <span class="sr-only">(current)</span></a>
+          <li class="nav-item">
+            <a class="nav-link" href="/teacher">Teacher</a>
+          </li>
+            
+        </ul>
+
+        <ul class="navbar-nav">
+          <li class="nav-item">
+              <a class="navbar-brand" href="#">Cpen291 Group A16 </a>
           </li>
         </ul>
+         
       </div>
     </nav>
     
@@ -74,26 +83,38 @@
                 </div>
               </div>
             </div>
-          </div>
-          <div class="row">
-            <div class="col-sm">
+
+            <div class="row mt-4">
+            <div class="col-lg">
               <div class="card">
                   <div class="card-body">
                       <div class="h5 card-title"><b>Set Frequency</b></div>
-                      <p class="card-text">Click to set frequency for camera swing.</p>
+                      <p class="card-text">Slide to set frequency for camera swing.</p>
                       <form class="form-inline">
                         <div class="form-group mx-sm-3 mb-2">
                           <label for="inputPassword2" class="sr-only">Password</label>
-                          <input type="password" class="form-control" id="user_frequency" placeholder="Frequency">
+                          <div class="d-flex justify-content-center my-4">                           
+                              <form name="Frequency">
+                                <input type="range" name="ageInputName" id="user_frequency" min="1" max="10" oninput="outvalue.value = user_frequency.value">
+                                <output  id="outvalue">5</output>
+                              </form>                         
+                          </div>
                         </div>
                       </form>
                       <strong><div class="h6 status" id="Set"></div></strong>
-                      <button style = class="btn btn-success" onclick="requestSetFrequency()">Set</button>
+                      <button class="btn btn-success" onclick="requestSetFrequency()">Set</button>
                   </div>
               </div>
+              </div>
             </div>
+
           </div>
+          
+            
+          
         </div>
+
+        
           <div class="col-sm mt-4">
               <div class="card">
                   <div class="card-body">
@@ -102,7 +123,6 @@
                   </div>
               </div>
           </div>
-        </div>
         <div class="row mt-4">
             <div class="col-sm">
                 <div class="card">
