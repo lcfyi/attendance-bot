@@ -2,9 +2,8 @@
     // Create database connection
     $db = mysqli_connect("localhost", "root", "", "students");
 
-    //   error_reporting(0);
 
-    // Generate the secret on the PHP end
+    // Set the Present field for entries to 0 (start of a new day)
     if (isset($_POST['requestClear'])) {
         $sql_query = "UPDATE student_info SET Present = '0'";
         if (mysqli_query($db, $sql_query)) {

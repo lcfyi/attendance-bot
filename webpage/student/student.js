@@ -9,6 +9,7 @@ init = async () => {
             let video = document.getElementById('video');
             let canvas = document.getElementById('canvas');
             let context = canvas.getContext('2d');
+            //Initialize canvas dimensions
             canvas.height = video.videoHeight;
             canvas.width = video.videoWidth;
             context.fillStyle = 'grey';

@@ -2,8 +2,8 @@
     // Create database connection
     $db = mysqli_connect("localhost", "root", "", "students");
 
-    // error_reporting(0);
     if (isset($_POST['requestTable'])) {
+        //request entries in the format ID, Name and Photo for the present table
         if ($_POST['requestTable'] === "present") {
             $sql_query = "SELECT `studentID`, `Name`, `Photo` FROM `student_info` WHERE Present = '1'";
 
@@ -16,7 +16,8 @@
                 echo json_encode($retTable);
             }
         } else if ($_POST['requestTable'] === "unclaimed") {
-            $sql_query = "SELECT `Login_Phrase` FROM `student_info` WHERE Needs_Update = '1'";
+            //request entries in the format Login Phrase to show all unused login_phrases
+            $sql_query = "SELECT `Login_Phrase` FROM `student_info` WHERE Needs_Update = '1' AND `studentID`=NULL";
 
             // If fetch was successful, return the table
             if ($result = mysqli_query($db, $sql_query)) {
@@ -27,6 +28,7 @@
                 echo json_encode($retTable);
             }
         } else if ($_POST['requestTable'] === "getAll") {
+            //request entries in the format ID, Name to show the list of all registered students
             $sql_query = "SELECT `studentID`, `Name` FROM `student_info` WHERE Name IS NOT NULL";
     
             if ($result = mysqli_query($db, $sql_query)) {
