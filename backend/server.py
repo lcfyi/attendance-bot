@@ -1,33 +1,22 @@
-# For this code, take a look at /face_recognition_server/server.py
-# and adapt the code within that folder so that your poll.py process
-# runs parallel to that code, and updates the encoding whenever necessary
-
-# (You'll have to change it from two arrays to a dictionary, would make
-# your life a lot easier) But what you need it to do is basically compare
-# the existing dictionary in memory as to whether or not a particular encoding
-# you grabbed from memory exists in the dictionary. If not, add it.
-# Since studentIDs are unique, you can use that as the key pretty reliably.
-
-
-# In addition to that, you'll have to adapt the code in 
-# /face_recognition_server/server.py to update the database whenever a
-# face is detected. We should decide if we want to store date/time or just a 
-# boolean.
-
-
-# The last thing we need to do is set up a forwarding server for the Pi 
-# to the teacher front-end. This part shouldn't be too difficult, though
-# we may have to get a little crafty with the way we handle the websocket
-# since we don't have enough ports open to us.
+# Our server implementation basically has two things: a polling function
+# that updates the database with face encodings whenever there are new entries,
+# and a socket handler that will handle all the communication between a client
+# and the Pi
 #
-# | RASPBERRY PI | <-----------> | VM | <-----------> | CLIENT(S) |
+# There are two processes: the main process and the poll process:
+#     - The poll process will synchronize the shared memory dictionary of 
+#         student IDs aand encodings, and also update the SQL database with 
+#         the encodings whenever necessary
+#     - The main process will run two threads: face recognition and the socket 
+#         interface; the face recognition thread will process the frame every
+#         second, and the socket interface will maintain the event loop to handle
+#         incoming socket connections (two from the Pi for camera and parameters, 
+#         and two from a client for the camera and parameters). The flow of data
+#         from elements are as:
 #
-# From above, the VM should just listen on a particular port (443 in our
-# case), and wait for a special packet to determine what to do.
-#
-# Examples
-# Pi (I am pi) --> VM ==> forward camera stream to another socket
-# Client (I am client) --> VM ==> VM sends camera stream to the socket
+#         |------------|<-- params --|----------|<-- params --|------------|
+#         |     Pi     |             |    VM    |             |   Client   |
+#         |------------|-- frames -->|----------|-- frames -->|------------|
 
 import sys
 import face_recognition
@@ -43,15 +32,17 @@ from time import perf_counter as now
 import mysql.connector
 import os
 
+# Our global variables
 PROCESSES = []
 THREADS = []
 RAW_FRAME = None
+# Parameter format
 PARAMS = {"angle": 2, "move": 1.5, "max": 120, "min": 60, "updated": False}
 
 # This function runs in a thread concurrent to the main websocket handler 
-# to do face recognition. It can take its time
+# to do face recognition. It can take up to 3 seconds for this to run, so it's
+# on another thread
 def face_recognition_thread(dictionary, signal):
-    # print("Face recognition thread started")
     # Connect to the database, since we'll need to update on face detection
     # Create a helper function to mark the student as present
     def updatePresent(stuID):
@@ -62,12 +53,10 @@ def face_recognition_thread(dictionary, signal):
                 database = "students",
                 use_pure = True # This is necessary to avoid encoding errors
             )
-            # print("Face recoginition DB connection successful")
-            # print("Updating entry for ", stuID)
             # Update the table
             cursor = mydb.cursor()
             args = (stuID,)
-            #Mark recognized faces as present
+            # Mark recognized faces as present
             cursor.execute("UPDATE student_info SET Present='1' WHERE studentID = %s", args)
             mydb.commit()
             # Update the dictionary by mutating it
@@ -76,8 +65,9 @@ def face_recognition_thread(dictionary, signal):
             temp['seen'] = 1
             dictionary[stuID] = temp
 
-    # Global frame object
+    # Global frame object, this probably isn't necessary since we're not writing to it
     global RAW_FRAME
+    # Set our current time so we use a non-blocking model to delay
     curr_time = now()
     while signal.is_set():
         if now() - curr_time < 1:
@@ -105,14 +95,15 @@ def face_recognition_thread(dictionary, signal):
                     if True in matches:
                         first_idx = matches.index(True)
                         name = unmatched_faces[first_idx][0]
+                        # Call our update function since we've found a match
                         updatePresent(name)
-            # print(now(), " end face")
+        # Mark the end of the function
         curr_time = now()
 
 # This process handles all the update and encoding functionality of the database,
 # all wrapped up in a process to make it easier for us
 def polling_process(dictionary):
-    # print("Polling process started")
+    # This internal function synchronizes our encodings
     def syncEncoding():
         # Start a new DB connection
         mydb = mysql.connector.connect(
@@ -121,7 +112,6 @@ def polling_process(dictionary):
             database = "students",
             use_pure = True # This is necessary to avoid encoding errors
         )
-        # print("Synchronizing encodings")
         # Grab the student ID and encodings that exist in the table
         cursor = mydb.cursor()
         cursor.execute("SELECT studentID, Encoding, Present FROM student_info WHERE NOT ISNULL(Encoding)")
@@ -130,19 +120,15 @@ def polling_process(dictionary):
         for row in results:
             # If the key isn't in the dictionary, add it
             if row[0] not in dictionary:
-                # print("New results")
-                # print((row[0], row[2]))
                 # Reshape as the original numpy array
-                dictionary[row[0]] = {"encoding": np.frombuffer(row[1], dtype=np.float64).reshape((128,)) \
-                    , "seen": row[2]}
+                dictionary[row[0]] = {"encoding": np.frombuffer(row[1], dtype=np.float64).reshape((128,)), \
+                    "seen": row[2]}
             # Or if the present state does not match the seen state, update it
             elif row[2] != dictionary[row[0]]['seen']:
-                # print("Updated results")
-                # print((row[0], row[2]))
                 dictionary.pop(row[0])
-                dictionary[row[0]] = {"encoding": np.frombuffer(row[1], dtype=np.float64).reshape((128,)) \
-                    , "seen": row[2]}
-    
+                dictionary[row[0]] = {"encoding": np.frombuffer(row[1], dtype=np.float64).reshape((128,)), \
+                    "seen": row[2]}
+    # This internal function updates the encodings in the table
     def updateEncodings():
         # Start a new DB connection
         mydb = mysql.connector.connect(
@@ -151,7 +137,6 @@ def polling_process(dictionary):
             database = "students",
             use_pure = True # This is necessary to avoid encoding errors
         )
-        # print("Updating encodings")
         # Grab the entries with photos but do not otherwise have an encoding
         cursor = mydb.cursor()
         cursor.execute("SELECT studentID, Photo FROM student_info WHERE ISNULL(Encoding) AND NOT ISNULL(Photo)")
@@ -160,13 +145,11 @@ def polling_process(dictionary):
         try:
             os.chdir("/opt/lampp/htdocs/photos")
         except FileNotFoundError:
-            # print("FileNotFoundError")
             return
         # Process the results
         for row in results:
-            # print(row)
             try:
-                #load image
+                # Load image
                 img = face_recognition.load_image_file(row[1])
                 try:
                     enc = face_recognition.face_encodings(img)[0]
@@ -176,99 +159,97 @@ def polling_process(dictionary):
                     # Commit it
                     mydb.commit()
                 except IndexError:
-                    #if no face is found, the array call is out of bounds
-                    #we need to need to update that db entry
-                    # print("No face found, photo needs update")
+                    # If no face is found, the array call is out of bounds
+                    # thus we need to need to update that db entry
                     cursor.execute("UPDATE student_info SET Photo=%s, \
                         Needs_Update=%s WHERE studentID = %s", (None, "1", row[0]))
                     mydb.commit()
             except FileNotFoundError:
-                # print("File not found for ", row[1])
                 pass
 
+    # Sync encodings at the start
     syncEncoding()
+    # Mark the beginning
     curr_time = now()
     while True:
-        #poll every 2 seconds
+        # Poll every 2 seconds
         if now() - curr_time < 2:
             continue
-            # If our rate limit has been exceeded, do stuff
+        # Update encodings
         updateEncodings()
+        # Synchronize the tables
         syncEncoding()
+        # Mark the end
         curr_time = now()
 
-#receive images from the rpi camera and save that as the raw frame
+# Receive images from the rpi camera and save that as the raw frame
 async def rpi_handler(websocket, path):
     global RAW_FRAME
-    # print("RPi frame socket opened")
     try:
-        #image consumer loop
+        # Keep the connection alive
         while True:
             val = None
+            # Wait for the next frame, and set a timeout of 1 second
             try:
-                # print("Receiving")
                 val = await asyncio.wait_for(websocket.recv(), 1)
-                # print("Received")
             except asyncio.TimeoutError:
                 val = None
-                # print("RPi timeout")
+            # If timed out, then we don't set the raw frame
             if val is not None:
-                #decode from bytes into an image for interpretation
+                # Otherwise, decode from bytes into an image for interpretation
                 RAW_FRAME = np.frombuffer(val, dtype=np.uint8).reshape((480, 640, 3))
-
+    # We should only catch the connection being closed
     except websockets.exceptions.ConnectionClosed:
-        # print("RPi frame socket closed")
         pass
 
+# Handle the client frame connection, forwards to client
 async def client_handler(websocket, path):
-    # print("Raw frame socket opened")
     try:
-        #frame forwarding loop
+        # Keep the connection alive
         while True:
-            #send frames at 0.15 second intervals to the client
+            # Send frames at 0.15 second intervals to the client
             await asyncio.sleep(0.15)
+            # Only send if the RAW_FRAME is not None
             if RAW_FRAME is not None:
-                encode_param = [int(cv2.IMWRITE_JPEG_QUALITY), 50] # Encode at 15%
+                encode_param = [int(cv2.IMWRITE_JPEG_QUALITY), 50] # Encode at 50%
                 f = cv2.imencode('.jpg', RAW_FRAME, encode_param)[1]
+                # Wait a maximum of 1 second for this call
                 try:
-                    # print("Sending")
                     await asyncio.wait_for(websocket.send(f.tobytes()), 1)
-                    # print("Sent")
                 except asyncio.TimeoutError:
-                    # print("Raw timeout")
                     pass
     except websockets.exceptions.ConnectionClosed:
-        # print("Raw frame socket closed")
         pass
 
+# Handles the parameter connection, both for the rpi and client
+# We used the same port for this because we figured we do not need
+# as high of a throughput as the frame ports, thus we allow a wildcard
+# endpoint at /ws/signal/* (as detailed in httpd-custom.conf)
 async def param_handler(websocket, path):
+    # We'll be writing the global PARAMS object, declare it
     global PARAMS
-    # print("Param socket is opened")
-    # print(path)
     try:
+        # This is rpi connection, thus different logic
         if "rpi" in path:
-            # print("RPi connection")
             # Keep this connection open
             # Forward JSON package containing the parameter values for the robot to move
+            # if the parameters have been updated
             while True:
                 await asyncio.sleep(2)
                 if PARAMS["updated"]:
                     await websocket.send(json.dumps(PARAMS))
-                    # print("Sent value")
                     PARAMS["updated"] = False
+        # Client logic
         if "client" in path:
-            # print("Client connection")
             # Recieve JSON packets from clients to forward to RPi
             while True:
                 val = await websocket.recv()
-                # print("Received value ", json.loads(val))
+                # Decode the payload
                 PARAMS = json.loads(val)
     except websockets.exceptions.ConnectionClosed:
-        # print("Param socket closed")
         pass
 
-
-
+# Main function that is run on script execute
 def main(signal):
     # Process for our database update functionality
     manager = multiprocessing.Manager()
@@ -288,7 +269,6 @@ def main(signal):
 
     # Set up the server that will handle all socket connections, will run
     # in the main process
-    # print("Setting up socket")
     rpi = websockets.serve(ws_handler=rpi_handler, host='0.0.0.0', port=3001)
     asyncio.get_event_loop().run_until_complete(rpi)
     cli = websockets.serve(ws_handler=client_handler, host='0.0.0.0', port=3002)
@@ -300,11 +280,12 @@ def main(signal):
 
 if __name__ == "__main__":
     try:
-        #Need threading Event to join threads at termination
+        # Need threading Event to join threads at termination
         signal = threading.Event()
         signal.set()
         main(signal)
     except KeyboardInterrupt:
+        # Clean getaway
         signal.clear()
         for t in THREADS:
             t.join()

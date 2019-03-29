@@ -13,8 +13,11 @@ init = () => {
     try {
         sock = new WebSocket(uri);
     } catch (err) {
+        // If the socket fails, we're on a secure page. Redirect to insecure
+        // because we couldn't open wss socket
         window.location.href = "http://cpen291-16.ece.ubc.ca/teacher/";
     }
+    // Notify when socket connects
     sock.addEventListener('open', (e) => {
         console.log("Opened")
     });
@@ -190,11 +193,15 @@ requestSetParameters= () =>{
  * json.length == headers.length. Does not check malformity
  */
 tableHelper = (headers, json) => {
+    // Begin the body
     let body = "<table class='table table-striped'><thead><tr>";
+    // Iterate through the headers and add them to the body
     for (let i = 0; i < headers.length; i++) {
         body += "<th scope='col'>" + headers[i] + "</th>";
     }
+    // End the header
     body += "</tr></thead><tbody>";
+    // Iterate through the returned rows and add them to the body
     for (let i = 0; i < json.length; i++) {
         body += "<tr>";
         for (let j = 0; j < json[i].length; j++) {
@@ -213,6 +220,7 @@ tableHelper = (headers, json) => {
     return body;
 }
 
+// If it's an image, we're going to add our special sauce hover functionality
 specialImageHandler = (filename) => {
     return "<a>Hover<div class='imgContainer'><img src=/photos/" + filename
                     + "?></div></a>";

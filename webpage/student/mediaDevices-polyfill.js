@@ -1,3 +1,7 @@
+// NOTE that this polyfill was adapted from https://github.com/mozdevs/mediaDevices-getUserMedia-polyfill
+// to support devices that do not support the mediaDevices API, so we can support older devices (to a 
+// certain point, of course)
+
 (function() {
 
 	var promisifiedOldGUM = function(constraints, successCallback, errorCallback) {

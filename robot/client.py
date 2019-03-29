@@ -30,23 +30,30 @@ def camera(signal):
 
 # Process for our robot
 def robot(dictionary):
+    # Pass it the shared memory parameter
     rob = bot(dictionary)
     while True:
+        # Start the robot tasks
         rob.checkTrack()
-        #print(Robot.status)
+        # Grab the status
         if rob.status == "stopped":
+            # Scan
             rob.scan()
+            # Reset the pan and tilt servos
             rob.x_pan.reset()
             rob.y_pan.reset()
+            # Reverse the direction
             rob.direction *= -1
-            # print("going")
+            # Set the direction
             if rob.direction < 0:
                 rob.goBack()
             else:
                 rob.goStraight()
+            # Set a timeout when it gets to the end of the track
             curr_time = now()
             while now() - curr_time < 0.2:
                 continue
+        # Stop and do it all over again
         rob.stop()
         rob.scan()
         rob.x_pan.reset()
@@ -54,46 +61,51 @@ def robot(dictionary):
 
 # Parameter websocket, updates the dictionary
 async def paramAsy(dictionary, signal):
+    # While the thread should continue
     while signal.is_set():
+        # Wrap everything in an unconditional try-catch to ensure
+        # that the Pi never errors out while sending data, and that 
+        # it will always try to restore the connection
         try:
-            ws = await asyncio.wait_for(websockets.connect("ws://cpen291-16.ece.ubc.ca/ws/signal/rpi"), 5)
-            print("Parameter socket opened")
+            # Open the connection
+            ws = await asyncio.wait_for(websockets.connect("ws://cpen291-16.ece.ubc.ca/ws/signal/rpi"), 1)
+            # Second while loop
             while signal.is_set():
                 asyncio.sleep(0.15)
+                # If the socket isn't open for some reason, open it again
                 if not ws.open and signal.is_set():
-                    print("not open")
-                    ws = await asyncio.wait_for(websockets.connect("ws://cpen291-16.ece.ubc.ca/ws/signal/rpi"), 5)
+                    ws = await asyncio.wait_for(websockets.connect("ws://cpen291-16.ece.ubc.ca/ws/signal/rpi"), 1)
+                # Grab the dictionary
                 ret = await ws.recv()
                 val = json.loads(ret)
-                # print(val)
+                # Update our values with the values from the socket
                 dictionary["angle"] = val["angle"]
                 dictionary["move"] = val["move"]
                 dictionary["max"] = val["max"]
                 dictionary["min"] = val["min"]
         except:
-            # print("Socket Closed")
-            pass
+            # Close the socket if it's still open, and keep going
+            if ws.open:
+                ws.close()
 
 # Camera websocket, should start up if fails and run forever
 async def camAsy(signal):
+    # Same as above
     while signal.is_set():
         try:
-            ws = await asyncio.wait_for(websockets.connect("ws://cpen291-16.ece.ubc.ca/ws/rpicam"), 5)
-            print("Camera socket opened")
+            # Start the connection
+            ws = await asyncio.wait_for(websockets.connect("ws://cpen291-16.ece.ubc.ca/ws/rpicam"), 1)
             while signal.is_set():
                 asyncio.sleep(0.15)
+                # If the socket isn't open, open it again
                 if not ws.open and signal.is_set():
-                    print("Not open")
-                    ws = await asyncio.wait_for(websockets.connect("ws://cpen291-16.ece.ubc.ca/ws/rpicam"), 5)
+                    ws = await asyncio.wait_for(websockets.connect("ws://cpen291-16.ece.ubc.ca/ws/rpicam"), 1)
+                # If the image isn't none, send it
                 if IMAGE is not None:
-                    try:
-                        await asyncio.wait_for(ws.send(IMAGE.tobytes()), 0.5)
-                    except asyncio.TimeoutError:
-                        # print("Timeout")
-                        ws.close()
+                    await asyncio.wait_for(ws.send(IMAGE.tobytes()), 0.5)
         except:
-            # Catch error, open again
-            pass
+            if ws.open:
+                ws.close()
 
 async def main(signal):
     # Process setup
@@ -117,17 +129,16 @@ async def main(signal):
     for p in PROCESSES:
         p.start()
 
-    # Start all of them 
+    # Add our tasks to the event loop and run them concurrerntly
     await asyncio.gather(paramAsy(dic, signal), camAsy(signal))
 
 if __name__ == "__main__":
     try:
         signal = threading.Event()
         signal.set()
-
         asyncio.get_event_loop().run_until_complete(main(signal))
     except KeyboardInterrupt:
-        # print("Trying to stop")
+        # Clean up the setup
         signal.clear()
         for t in THREADS:
             t.join()

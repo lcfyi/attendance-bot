@@ -21,7 +21,8 @@
 		$lgPhrase = mysqli_real_escape_string($db, $_POST['lgPhrase']);
         // image file directory
   	    $target = "/opt/lampp/htdocs/photos/". $stuID . ".png";
-
+        
+        // Formed query
         $sql_query = "SELECT * FROM student_info WHERE Needs_Update = '1' 
                 AND Login_Phrase = '$lgPhrase'";
         
@@ -34,6 +35,7 @@
     
         // Store the image in place, if successful then do additional stuff
         if ($result = mysqli_query($db, $sql_query)) {
+            // If we returned exactly one row, which is what we want, then do stuff
             if (mysqli_num_rows($result) === 1) {
                 if(file_put_contents($target, base64_decode($stuPhotoData))) {
                     // Create the image, if the query was successful
