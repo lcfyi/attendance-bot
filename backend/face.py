@@ -34,12 +34,12 @@ import face_recognition
 import asyncio
 import websockets
 import numpy as np
+import json
 import multiprocessing
 import threading
 import copy
 import cv2
 from time import perf_counter as now
-from time import sleep as nap
 import mysql.connector
 import os
 
@@ -76,8 +76,12 @@ def face_recognition_thread(dictionary, signal):
 
     # Global frame object
     global RAW_FRAME
+    curr_time = now()
     while signal.is_set():
+        while now() - curr_time < 0.5:
+            continue
         if RAW_FRAME is not None:
+            print(now(), " processing face")
             # Make a copy of the current frame to do stuff with
             # curr_frame = copy.deepcopy(RAW_FRAME)
             # Create a dictionary for matches
@@ -91,10 +95,11 @@ def face_recognition_thread(dictionary, signal):
             
             # Get the unmatched faces
             if len(face_locations) != 0:
+                print("Found face")
                 unmatched_faces = [(a, b['encoding']) for a, b in dictionary.items() if b['seen'] != 1]
                 known_encodings = [f[1] for f in unmatched_faces]
                 for face_encoding in face_encodings:
-                    matches = face_recognition.compare_faces(known_encodings, face_encoding)
+                    matches = face_recognition.compare_faces(known_encodings, face_encoding, tolerance=0.3)
                     name = "Unknown"
                     # We found a match
                     if True in matches:
@@ -102,7 +107,8 @@ def face_recognition_thread(dictionary, signal):
                         name = unmatched_faces[first_idx][0]
                     # Append a name to the location
                     updatePresent(name)
-
+            print(now(), " end face")
+        curr_time = now()
 
 # This process handles all the update and encoding functionality of the database,
 # all wrapped up in a process to make it easier for us
@@ -177,7 +183,7 @@ def polling_process(dictionary):
     syncEncoding()
     curr_time = now()
     while True:
-        if now() - curr_time < 5:
+        if now() - curr_time < 8:
             continue
             # If our rate limit has been exceeded, do stuff
         updateEncodings()
@@ -189,10 +195,11 @@ async def rpi_handler(websocket, path):
     print("RPi frame socket opened")
     try:
         while True:
-            await asyncio.sleep(0.033)
             val = None
             try:
-                val = await asyncio.wait_for(websocket.recv(), 1)
+                print("Receiving")
+                val = await asyncio.wait_for(websocket.recv(), 0.2)
+                print("Received")
             except asyncio.TimeoutError:
                 pass
             if val is not None:
@@ -205,15 +212,68 @@ async def client_handler(websocket, path):
     try:
         while True:
             if RAW_FRAME is not None:
-                await asyncio.sleep(0.01)
-                encode_param = [int(cv2.IMWRITE_JPEG_QUALITY), 15] # Encode at 15%
+                encode_param = [int(cv2.IMWRITE_JPEG_QUALITY), 50] # Encode at 15%
                 f = cv2.imencode('.jpg', RAW_FRAME, encode_param)[1]
                 try:
-                    await asyncio.wait_for(websocket.send(f.tobytes()), 1)
+                    await asyncio.wait_for(websocket.send(f.tobytes()), 0.2)
                 except asyncio.TimeoutError:
                     pass
     except websockets.exceptions.ConnectionClosed:
         print("Raw frame socket closed")
+
+async def signaller(websocket, path):
+    print("Connected")
+    try:
+        ws_task = asyncio.ensure_future(ws_con_handler(websocket))
+        done, pending = await asyncio.wait(
+            [ws_task],
+            return_when=asyncio.FIRST_COMPLETED,
+        )
+        for tasks in pending:
+            task.cancel()
+    except Exception as e:
+        print("Error while launching websocket handler task")
+
+# Helper method for sending messages to the connection argument
+async def send_to(con, message):
+    try:
+        await con.send(json.dumps(message))
+    except Exception as e:
+        print("Error while sending message to peer")
+
+# When the user inputs a message, we do stuff
+def login_action(con, msg):
+    if 'data' in msg:
+        if msg['data'] not in cons:
+            usr = msg['data']
+            logger.debug('Login action for user %s, saving its connection', usr)
+            cons[usr] = con
+    else:
+        raise Exception("Can't find 'data' key on received message")
+
+async def ws_con_handler(ws):
+    try:
+        while True:
+            msg = json.loads(await ws.recv())
+            if 'action' in msg:
+                if msg['action'] == 'login':
+                    login_action(ws, msg)
+                else:
+                    if 'to' in msg:
+                        await send_to(cons[msg['to']], msg)
+                    else:
+                        raise Exception('No \'to\' key on received message')
+            else:
+                raise Exception('No \'action\' key on received message')
+    except websockets.exceptions.ConnectionClosed:
+        print("Connection closed")
+    except Exception:
+        print("Execption when receiving messages")
+
+
+
+
+
 
 def main(signal):
     # Process for our database update functionality
@@ -239,6 +299,8 @@ def main(signal):
     asyncio.get_event_loop().run_until_complete(rpi)
     cli = websockets.serve(ws_handler=client_handler, host='0.0.0.0', port=3002)
     asyncio.get_event_loop().run_until_complete(cli)
+    sig = websockets.serve(ws_handler=signaller, host='0.0.0.0', port=3003)
+    asyncio.get_event_loop().run_until_complete(sig)
     asyncio.get_event_loop().run_forever()
     
 
