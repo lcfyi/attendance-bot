@@ -6,11 +6,8 @@ init = () => {
     // Set the intervals until forever
     setInterval(requestPresent, 3000);
     setInterval(requestUnclaimed, 3000);
-<<<<<<< HEAD
     frequency_socket = new WebSocket("ws://cpen291-16.ece.ubc.ca/ws/signal/param"); //Socket for frequency set
-=======
     setInterval(requestAll, 20000);
->>>>>>> refs/remotes/origin/master
     // Set up the socket stream from the raspberry pi, open it
     let uri = "ws://" + window.location.hostname + "/ws/client";
     try {
