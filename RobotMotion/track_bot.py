@@ -16,8 +16,8 @@ class TrackRobot(robot_control.Robot_Control):
         self.x_pan.reset()
         self.y_pan.reset()
 
-        self.x = [120, 150, 120, 90, 50, 30, 50, 90]
-        self.y = [90, 110, 130]
+        self.x = [120, 100, 80, 60]
+        self.y = [90, 110]
         time.sleep(1)
 
 
@@ -25,14 +25,18 @@ class TrackRobot(robot_control.Robot_Control):
 
     def checkTrack(self):
             current = time.perf_counter()
+            track = 0
             while True:
-                if (time.perf_counter() - current) >= 2 :
+                if (time.perf_counter() - current) >= 1.5 :
                     break
                 # true when we detect white
-                rightVal = self.leftSensor.read_sensor()
-                leftVal = self.rightSensor.read_sensor()
-                goStraight = rightVal and leftVal
+                rightVal = not self.leftSensor.read_sensor()
+                leftVal = not self.rightSensor.read_sensor()
 
+
+                goStraight = rightVal and leftVal
+                print("Right: "+str(rightVal)+" Left: "+str(leftVal))
+                #print(str(self.direction))
                 if goStraight:
                     if self.direction == 1:
                         self.goStraight()
@@ -42,20 +46,13 @@ class TrackRobot(robot_control.Robot_Control):
                         print("switch")
                         self.status = "moving"
 
-                elif rightVal:
-                    self.turnLeftImm()
-                    if not self.status == "moving":
-                        self.status = "moving"
-
-                elif leftVal:
-                    self.turnRightImm()
-                    if not self.status == "moving":
-                        self.status = "moving"
-
                 else:
-                    self.stop()
-                    if not self.status == "stopped":
-                        self.status = "stopped"
+                    if track >= 5:
+                        self.stop()
+                        if not self.status == "stopped":
+                            self.status = "stopped"
+                            break
+                    track += 1
 
     def scan(self):
         for y in self.y:
@@ -63,28 +60,8 @@ class TrackRobot(robot_control.Robot_Control):
             for x in self.x:
                 self.x_pan.change_angle(x)
                 currenttime = time.perf_counter()
-                while time.perf_counter() - currenttime < 0.5:
+                while time.perf_counter() - currenttime < 2:
                     pass
-    def loop(self):
-        try: 
-            while True:
-                self.checkTrack()
-                if self.status == "stopped":
-                    current = time.perf_counter()
-                    while time.perf_counter() - current < 2:
-                        pass
-                    
-                    self.direction *= -1
-                    self.goStraight()
-                    time.sleep(1)
-                self.stop()
-                self.scan()
-                self.x_pan.reset()
-                self.y_pan.reset()
-
-        except KeyboardInterrupt:
-            GPIO.cleanup() 
-            pass
 
 
 if __name__ == "__main__":
@@ -93,13 +70,17 @@ if __name__ == "__main__":
     try: 
         while True:
             Robot.checkTrack()
+            #print(Robot.status)
             if Robot.status == "stopped":
-                current = time.perf_counter()
-                while time.perf_counter() - current < 2:
-                    pass
-                
+                Robot.scan()
+                Robot.x_pan.reset()
+                Robot.y_pan.reset()
                 Robot.direction *= -1
-                Robot.goStraight()
+                print("going")
+                if Robot.direction < 0:
+                    Robot.goBack()
+                else:
+                    Robot.goStraight()
                 time.sleep(1)
             Robot.stop()
             Robot.scan()
