@@ -13,7 +13,7 @@
       <script src = "teacher.js"></script>
   </head>
   <body onload="init()">
-    <!-- Navbar stuff -->
+    <!-- Navbar -->
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
       <a class="navbar-brand" href="#">
         <img src="../assets/imgs/logo.png" width="30" height="30" alt="">
@@ -45,8 +45,9 @@
       </div>
     </nav>
     
-    <!-- Dashboard stuff -->
+    <!-- Dashboard -->
     <div class="container">
+        <!-- Table for students present in lab -->
         <div class="row mt-4">
             <div class="col-sm">
                 <div class="card">
@@ -57,7 +58,9 @@
                 </div>
             </div>
         </div>
+      
         <div class="row mt-4">
+          <!-- Holds Generate Secret Card -->
           <div class="col-sm">
             <div class="card">
                 <h5 class="card-header">Generate New Secret</h5>
@@ -69,6 +72,7 @@
                 </div>
             </div>
           </div>
+          <!-- Holds Attendance Clear Card -->
           <div class="col-sm">
             <div class="card">
                 <h5 class="card-header">Clear Attendance</h5>
@@ -83,6 +87,7 @@
         </div>
 
         <div class="row mt-4">
+          <!-- Holds Parameter Sliders Card-->
           <div class="col-sm">
             <div class="card">
                 <h5 class="card-header">Set Parameters</h5>
@@ -120,6 +125,7 @@
                 </div>
             </div>
           </div>
+          <!-- Holds Set Needs_Update Card-->
           <div class="col-sm md-4">
             <div class="card">
                 <h5 class="card-header">Request Update</h5>
@@ -134,6 +140,7 @@
             </div>
           </div>
         </div>        
+        <!-- Displays camera feed from RPi or Webcam depending on available source-->
         <div class="row mt-4">
           <div class="col-sm">
               <div class="card">
@@ -144,7 +151,9 @@
               </div>
           </div>
         </div>
+
         <div class="row mt-4">
+          <!-- Holds table with unassigned secret phrases that can be used to register students -->
             <div class="col-sm">
                 <div class="card">
                     <h5 class="card-header">Unclaimed Secrets</h5>
@@ -153,6 +162,7 @@
                     </div>
                 </div>
             </div>
+            <!-- Shows a list of all students enrolled in the class with their student numbers -->
             <div class="col-sm">
               <div class="card">
                   <h5 class="card-header">Registered Students</h5>
