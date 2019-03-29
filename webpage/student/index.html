@@ -13,7 +13,7 @@
         <script src="student.js" defer></script>
     </head>
     <body onload="init()">
-        <!-- Navbar stuff -->
+        <!-- Navbar -->
         <nav class="navbar navbar-expand-lg navbar-light bg-light">
       <a class="navbar-brand" href="#">
         <img src="../assets/imgs/logo.png" width="30" height="30" alt="">
@@ -45,7 +45,7 @@
       </div>
     </nav>
         
-        <!-- Form stuff -->
+        <!-- Form for registration or update -->
         <div class="container">
             <div class="row mt-4">
                 <div class="col-md">
@@ -77,10 +77,12 @@
                     </form>
                 </div>
             </div>
+            <!--Show video from webcam to capture image for DB-->
             <div class="row mt-4">
                 <div class="col-sm">
                     <video id="video" playsinline autoplay></video>
                 </div>
+                <!--Draws captured image on canvas-->
                 <div class="col-sm">
                     <canvas id="canvas"></canvas>
                 </div>

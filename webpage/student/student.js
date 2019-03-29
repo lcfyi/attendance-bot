@@ -1,4 +1,5 @@
 init = async () => {
+    //Setup webcam for students page
     let constraints = {video: {width: {ideal: 2048}, height: {ideal: 2048}, facingMode: "user"}};
     navigator.mediaDevices.getUserMedia(constraints).then((stream) => {
         let video = document.getElementById('video');
@@ -18,7 +19,7 @@ init = async () => {
     });
 
     document.getElementById("snap").addEventListener("click", (e) => {
-        // Grab everything we need
+        // Grab all required elements
         let video = document.getElementById('video');
         let canvas = document.getElementById('canvas');
         let context = canvas.getContext('2d');
@@ -35,7 +36,8 @@ init = async () => {
 }
 
 requestDbUpdate = () => {
-    if (validateForm()) {
+    //Only update DB if all form entries are in valid format
+    if (validateForm()) { 
         let xml = new XMLHttpRequest();
         // Add an event listener to update
         xml.onreadystatechange = function() {
@@ -59,22 +61,27 @@ validateForm = () => {
     let formStatus = document.getElementById('status');
     let valid = true;
     let retVals = [];
+    //Make sure the Student ID is a valid number
     if (stuID.value === "" || isNaN(stuID.value)) {
         valid = false;
         retVals.push("student number");
     }
+    //Make sure the Student Name is a valid string (not empty)
     if (stuName.value === "") {
         valid = false;
         retVals.push("name");
     }
+    //Make sure the Secret is a valid string (not empty)
     if (lgPhrase.value === "") {
         valid = false;
         retVals.push("login phrase");
     }
+    //Make sure the image input is valid (not empty)
     if (stuImg.value === "") {
         valid = false;
         retVals.push("image");
     }
+    //Accumulate errors and point them out
     let retStr = "<div class='alert alert-danger'>Invalid ";
     for (let i = 0; i < retVals.length; i++) {
         if (i === 0) {

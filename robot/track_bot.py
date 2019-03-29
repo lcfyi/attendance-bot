@@ -4,7 +4,9 @@ import time
 from servo_control import Servo_Control as sc
 
 class TrackRobot(Robot_Control):
+
     def __init__(self, dictionary):
+        #Setup Sensors, parameters and servos
         self.leftSensor = Optical_Sensor(6)
         self.rightSensor = Optical_Sensor(13)
         self.status = "stopped"
@@ -15,6 +17,8 @@ class TrackRobot(Robot_Control):
         self.x_pan.reset()
         self.y_pan.reset()
 
+        # Predetermined angles at which the robot
+        # waits to capture a frame
         self.x = [120, 100, 80, 60]
         self.y = [90, 110]
 
@@ -39,16 +43,15 @@ class TrackRobot(Robot_Control):
                 rightVal = not self.leftSensor.read_sensor()
                 leftVal = not self.rightSensor.read_sensor()
 
-
                 goStraight = rightVal and leftVal
-                #print(str(self.direction))
+
                 if goStraight:
                     if self.direction == 1:
                         self.goStraight()
                     else:
                         self.goBack()
                     if not self.status == "moving":
-                        print("switch")
+                        #print("switch")
                         self.status = "moving"
 
                 else:
@@ -60,6 +63,7 @@ class TrackRobot(Robot_Control):
                     track += 1
 
     def scan(self):
+        #Do the set pan and tilt routine defined by instance arrays
         for y in self.y:
             self.y_pan.change_angle(y)
             for x in self.x:
@@ -69,26 +73,27 @@ class TrackRobot(Robot_Control):
                     pass
 
     
-
-
 if __name__ == "__main__":
     import RPi.GPIO as GPIO 
     Robot = TrackRobot()
     try: 
         while True:
+            #check track color
             Robot.checkTrack()
-            #print(Robot.status)
             if Robot.status == "stopped":
+                #reach end of track and perform scan
                 Robot.scan()
                 Robot.x_pan.reset()
                 Robot.y_pan.reset()
                 Robot.direction *= -1
-                print("going")
+                #print("going")
                 if Robot.direction < 0:
                     Robot.goBack()
                 else:
                     Robot.goStraight()
                 time.sleep(1)
+            #status is still "moving"
+            #continue in the same direction after scanning
             Robot.stop()
             Robot.scan()
             Robot.x_pan.reset()

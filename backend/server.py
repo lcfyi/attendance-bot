@@ -67,6 +67,7 @@ def face_recognition_thread(dictionary, signal):
             # Update the table
             cursor = mydb.cursor()
             args = (stuID,)
+            #Mark recognized faces as present
             cursor.execute("UPDATE student_info SET Present='1' WHERE studentID = %s", args)
             mydb.commit()
             # Update the dictionary by mutating it
@@ -165,6 +166,7 @@ def polling_process(dictionary):
         for row in results:
             print(row)
             try:
+                #load image
                 img = face_recognition.load_image_file(row[1])
                 try:
                     enc = face_recognition.face_encodings(img)[0]
@@ -174,6 +176,8 @@ def polling_process(dictionary):
                     # Commit it
                     mydb.commit()
                 except IndexError:
+                    #if no face is found, the array call is out of bounds
+                    #we need to need to update that db entry
                     print("No face found, photo needs update")
                     cursor.execute("UPDATE student_info SET Photo=%s, \
                         Needs_Update=%s WHERE studentID = %s", (None, "1", row[0]))
@@ -185,6 +189,7 @@ def polling_process(dictionary):
     syncEncoding()
     curr_time = now()
     while True:
+        #poll every 2 seconds
         if now() - curr_time < 2:
             continue
             # If our rate limit has been exceeded, do stuff
@@ -192,10 +197,12 @@ def polling_process(dictionary):
         syncEncoding()
         curr_time = now()
 
+#receive images from the rpi camera and save that as the raw frame
 async def rpi_handler(websocket, path):
     global RAW_FRAME
     print("RPi frame socket opened")
     try:
+        #image consumer loop
         while True:
             val = None
             try:
@@ -206,6 +213,7 @@ async def rpi_handler(websocket, path):
                 val = None
                 print("RPi timeout")
             if val is not None:
+                #decode from bytes into an image for interpretation
                 RAW_FRAME = np.frombuffer(val, dtype=np.uint8).reshape((480, 640, 3))
 
     except websockets.exceptions.ConnectionClosed:
@@ -214,7 +222,9 @@ async def rpi_handler(websocket, path):
 async def client_handler(websocket, path):
     print("Raw frame socket opened")
     try:
+        #frame forwarding loop
         while True:
+            #send frames at 0.15 second intervals to the client
             await asyncio.sleep(0.15)
             if RAW_FRAME is not None:
                 encode_param = [int(cv2.IMWRITE_JPEG_QUALITY), 50] # Encode at 15%
@@ -236,6 +246,7 @@ async def param_handler(websocket, path):
         if "rpi" in path:
             print("RPi connection")
             # Keep this connection open
+            # Forward JSON package containing the parameter values for the robot to move
             while True:
                 await asyncio.sleep(2)
                 if PARAMS["updated"]:
@@ -244,7 +255,7 @@ async def param_handler(websocket, path):
                     PARAMS["updated"] = False
         if "client" in path:
             print("Client connection")
-            # Do client stuff
+            # Recieve JSON packets from clients to forward to RPi
             while True:
                 val = await websocket.recv()
                 print("Received value ", json.loads(val))
@@ -286,6 +297,7 @@ def main(signal):
 
 if __name__ == "__main__":
     try:
+        #Need threading Event to join threads at termination
         signal = threading.Event()
         signal.set()
         main(signal)
