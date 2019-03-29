@@ -1,7 +1,7 @@
 import time
 from adafruit_motorkit import MotorKit
 
-#inherited by robot to control over tracks, only need 90 degree turns
+# Inherited by robot to control over tracks, only need 90 degree turns
 class Robot_Control:
 
 	straight_val = 0.4
@@ -10,16 +10,6 @@ class Robot_Control:
 	right_wheel = kit.motor1
 	left_throttle = 0
 	right_throttle = 0
-
-	def turnLeftImm(self):
-
-		self._setLeft(0)
-		self._setRight(-1 * self.straight_val)
-
-	def turnRightImm(self):
-
-		self._setLeft(self.straight_val)
-		self._setRight(0)
 
 	def goStraight(self):
 		self._setLeft(self.straight_val)
@@ -38,21 +28,19 @@ class Robot_Control:
 			Robot_Control.straight_val = speed
 
 	def _setLeft(self, val):
-
 		try:
 			if val != self.left_wheel.throttle:
 				self.left_wheel.throttle = val
-				self.left_throttle = self.left_wheel.throttle
+				Robot_Control.left_throttle = self.left_wheel.throttle
 
 		except:
 			pass
 
 	def _setRight(self, val):
-
 		try:
 			if val != self.right_wheel.throttle:
 				self.right_wheel.throttle = val
-				self.right_throttle = self.right_wheel.throttle
+				Robot_Control.right_throttle = self.right_wheel.throttle
 
 		except:
 			pass

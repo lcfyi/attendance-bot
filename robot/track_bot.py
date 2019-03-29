@@ -1,12 +1,12 @@
-import robot_control
-import optical_sensor
+from .robot_control import Robot_Control
+from .optical_sensor import Optical_Sensor
 import time
-from servo_control import Servo_Control as sc
+from .servo_control import Servo_Control as sc
 
-class TrackRobot(robot_control.Robot_Control):
+class TrackRobot(Robot_Control):
     def __init__(self, dictionary):
-        self.leftSensor = optical_sensor.Optical_Sensor(6)
-        self.rightSensor = optical_sensor.Optical_Sensor(13)
+        self.leftSensor = Optical_Sensor(6)
+        self.rightSensor = Optical_Sensor(13)
         self.status = "stopped"
         self.direction = 1
         self.params = dictionary
