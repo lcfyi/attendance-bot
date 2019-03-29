@@ -71,12 +71,12 @@ a:hover>div {
 .carousel-item{
     height: auto;
     width:100%;
-    height: 400px;
+    /* height: 450px; */
 }
 
 .carousel-item img{
     width: auto;
-    height: 70%;
+    height: auto;
     max-height: 450px;
 }
 
