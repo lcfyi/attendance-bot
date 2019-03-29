@@ -39,7 +39,7 @@ def robot(dictionary):
             rob.x_pan.reset()
             rob.y_pan.reset()
             rob.direction *= -1
-            print("going")
+            # print("going")
             if rob.direction < 0:
                 rob.goBack()
             else:
@@ -55,26 +55,27 @@ def robot(dictionary):
 # Parameter websocket, updates the dictionary
 async def paramAsy(dictionary, signal):
     ws = await websockets.connect("ws://cpen291-16.ece.ubc.ca/ws/signal/rpi")
-    print("Parameter socket opened")
+    # print("Parameter socket opened")
     while signal.is_set():
         try:
             if not ws.open and signal.is_set():
-                print("not open")
+                # print("not open")
                 ws = await websockets.connect("ws://cpen291-16.ece.ubc.ca/ws/signal/rpi")
             ret = await ws.recv()
             val = json.loads(ret)
-            print(val)
+            # print(val)
             dictionary["angle"] = val["angle"]
             dictionary["move"] = val["move"]
             dictionary["max"] = val["max"]
             dictionary["min"] = val["min"]
         except websockets.exceptions.ConnectionClosed:
-            print("Socket Closed")
+            # print("Socket Closed")
+            pass
 
 # Camera websocket, should start up if fails and run forever
 async def camAsy(signal):
     ws = await websockets.connect("ws://cpen291-16.ece.ubc.ca/ws/rpicam")
-    print("Camera socket opened")
+    # print("Camera socket opened")
     while signal.is_set():
         try:
             if not ws.open:
@@ -85,7 +86,7 @@ async def camAsy(signal):
                     await asyncio.sleep(0.15)
                     await asyncio.wait_for(ws.send(IMAGE.tobytes()), 0.5)
                 except asyncio.TimeoutError:
-                    print("Timeout")
+                    # print("Timeout")
                     ws.close()
         except websockets.exceptions.ConnectionClosed:
             # Catch error, open again
@@ -123,7 +124,7 @@ if __name__ == "__main__":
 
         asyncio.get_event_loop().run_until_complete(main(signal))
     except KeyboardInterrupt:
-        print("Trying to stop")
+        # print("Trying to stop")
         signal.clear()
         for t in THREADS:
             t.join()
