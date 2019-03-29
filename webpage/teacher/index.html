@@ -84,22 +84,34 @@
         <div class="row mt-4">
           <div class="col-sm">
             <div class="card">
-                <h5 class="card-header">Set Frequency</h5>
+                <h5 class="card-header">Set Parameters</h5>
                 <div class="card-body">
-                    <p class="card-text">Slide to set frequency for camera swing.</p>
                     <form class="form-inline">
                       <div class="form-group mx-sm-3 mb-2">
                         <label for="inputPassword2" class="sr-only">Password</label>
                         <div class="d-flex justify-content-center my-4">                           
                             <form name="Frequency">
-                              <input type="range" name="ageInputName" id="user_frequency" min="1" max="10" oninput="outvalue.value = user_frequency.value">
+                              <label for="freqSlider">Frequency:                   </label>
+                              <input type="range" name="freqSlider" id="user_frequency" min="1" max="10" oninput="outvalue.value = user_frequency.value">
                               <output  id="outvalue">5</output>
                             </form>                         
                         </div>
                       </div>
                     </form>
+                    <form class="form-inline">
+                      <div class="form-group mx-sm-3 mb-2">
+                        <label for="inputPassword2" class="sr-only">Password</label>
+                        <div class="d-flex justify-content-center my-4">                           
+                            <form name="Distance">
+                              <label for="distSlider">Distance:                                </label>
+                              <input type="range" name="distSlider" id="user_distance" min="1" max="10" oninput="outvalueD.value = user_distance.value">
+                              <output  id="outvalueD">5</output>
+                            </form>                         
+                        </div>
+                      </div>
+                    </form>
                     <strong><div class="h6 status" id="Set"></div></strong>
-                    <button class="btn btn-success" onclick="requestSetFrequency()">Set</button>
+                    <button class="btn btn-success" onclick="requestSetParameters()">Set</button>
                 </div>
             </div>
           </div>
@@ -116,7 +128,7 @@
                 </div>
             </div>
           </div>
-        </div>
+        </div>        
         <div class="row mt-4">
           <div class="col-sm">
               <div class="card">
