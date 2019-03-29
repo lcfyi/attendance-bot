@@ -4,13 +4,12 @@ import time
 from servo_control import Servo_Control as sc
 
 class TrackRobot(robot_control.Robot_Control):
-
-    def __init__(self):
+    def __init__(self, dictionary):
         self.leftSensor = optical_sensor.Optical_Sensor(6)
         self.rightSensor = optical_sensor.Optical_Sensor(13)
         self.status = "stopped"
         self.direction = 1
-
+        self.params = dictionary
         self.x_pan = sc(26)
         self.y_pan = sc(19)
         self.x_pan.reset()
@@ -19,13 +18,10 @@ class TrackRobot(robot_control.Robot_Control):
         self.x = [120, 100, 80, 60]
         self.y = [90, 110]
 
-        self.servo_time = 2
-        self.move_time = 1.5
-        time.sleep(1)
-
     def changeAngles(self, max, min):
-        for i in range(0, 3):
-            self.x[i] = (max - min)/3*i+min
+        if max < 150 and min > 10:
+            for i in range(0, 3):
+                self.x[i] = (max - min)/3*i+min
 
     def servoTime(self, time):
         self.servo_time = time
@@ -37,7 +33,7 @@ class TrackRobot(robot_control.Robot_Control):
             current = time.perf_counter()
             track = 0
             while True:
-                if (time.perf_counter() - current) >= self.move_time :
+                if (time.perf_counter() - current) >= self.params["move"]:
                     break
                 # true when we detect white
                 rightVal = not self.leftSensor.read_sensor()
@@ -45,7 +41,6 @@ class TrackRobot(robot_control.Robot_Control):
 
 
                 goStraight = rightVal and leftVal
-                print("Right: "+str(rightVal)+" Left: "+str(leftVal))
                 #print(str(self.direction))
                 if goStraight:
                     if self.direction == 1:
@@ -70,7 +65,7 @@ class TrackRobot(robot_control.Robot_Control):
             for x in self.x:
                 self.x_pan.change_angle(x)
                 currenttime = time.perf_counter()
-                while time.perf_counter() - currenttime < self.servo_time:
+                while time.perf_counter() - currenttime < self.params["angle"]:
                     pass
 
     

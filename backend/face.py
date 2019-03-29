@@ -46,8 +46,7 @@ import os
 PROCESSES = []
 THREADS = []
 RAW_FRAME = None
-
-param_data = {"3"}
+PARAMS = {"angle": 2, "move": 1.5, "max": 120, "min": 60, "updated": False}
 
 # This function runs in a thread concurrent to the main websocket handler 
 # to do face recognition. It can take its time
@@ -206,7 +205,6 @@ async def rpi_handler(websocket, path):
             except asyncio.TimeoutError:
                 val = None
                 print("RPi timeout")
-                # return
             if val is not None:
                 RAW_FRAME = np.frombuffer(val, dtype=np.uint8).reshape((480, 640, 3))
 
@@ -217,11 +215,11 @@ async def client_handler(websocket, path):
     print("Raw frame socket opened")
     try:
         while True:
+            await asyncio.sleep(0.15)
             if RAW_FRAME is not None:
                 encode_param = [int(cv2.IMWRITE_JPEG_QUALITY), 50] # Encode at 15%
                 f = cv2.imencode('.jpg', RAW_FRAME, encode_param)[1]
                 try:
-                    await asyncio.sleep(0.15)
                     print("Sending")
                     await asyncio.wait_for(websocket.send(f.tobytes()), 0.2)
                     # print("Sent")
@@ -229,8 +227,30 @@ async def client_handler(websocket, path):
                     print("Raw timeout")
     except websockets.exceptions.ConnectionClosed:
         print("Raw frame socket closed")
-async def param_handler(websockets,path):
+
+async def param_handler(websocket, path):
+    global PARAMS
     print("Param socket is opened")
+    print(path)
+    try:
+        if "rpi" in path:
+            print("RPi connection")
+            # Keep this connection open
+            while True:
+                await asyncio.sleep(2)
+                if PARAMS["updated"]:
+                    await websocket.send(json.dumps(PARAMS))
+                    print("Sent value")
+                    PARAMS["updated"] = False
+        if "client" in path:
+            print("Client connection")
+            # Do client stuff
+            while True:
+                val = await websocket.recv()
+                print("Received value ", json.loads(val))
+                PARAMS = json.loads(val)
+    except websockets.exceptions.ConnectionClosed:
+        print("Param socket closed")
     param_data = await websockets.recv()
 
 
@@ -259,9 +279,9 @@ def main(signal):
     asyncio.get_event_loop().run_until_complete(rpi)
     cli = websockets.serve(ws_handler=client_handler, host='0.0.0.0', port=3002)
     asyncio.get_event_loop().run_until_complete(cli)
-    asyncio.get_event_loop().run_forever()
     param = websockets.serve(ws_handler = param_handler, host ='0.0.0.0',port=3003)
     asyncio.get_event_loop().run_until_complete(param)
+    asyncio.get_event_loop().run_forever()
     
 
 if __name__ == "__main__":
