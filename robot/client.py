@@ -55,12 +55,13 @@ def robot(dictionary):
 # Parameter websocket, updates the dictionary
 async def paramAsy(dictionary, signal):
     ws = await websockets.connect("ws://cpen291-16.ece.ubc.ca/ws/signal/rpi")
-    # print("Parameter socket opened")
+    print("Parameter socket opened")
     while signal.is_set():
+        asyncio.sleep(0.15)
         try:
             if not ws.open and signal.is_set():
-                # print("not open")
-                ws = await websockets.connect("ws://cpen291-16.ece.ubc.ca/ws/signal/rpi")
+                print("not open")
+                ws = await asyncio.wait_for(websockets.connect("ws://cpen291-16.ece.ubc.ca/ws/signal/rpi"), 5)
             ret = await ws.recv()
             val = json.loads(ret)
             # print(val)
@@ -68,27 +69,27 @@ async def paramAsy(dictionary, signal):
             dictionary["move"] = val["move"]
             dictionary["max"] = val["max"]
             dictionary["min"] = val["min"]
-        except websockets.exceptions.ConnectionClosed:
+        except:
             # print("Socket Closed")
             pass
 
 # Camera websocket, should start up if fails and run forever
 async def camAsy(signal):
     ws = await websockets.connect("ws://cpen291-16.ece.ubc.ca/ws/rpicam")
-    # print("Camera socket opened")
+    print("Camera socket opened")
     while signal.is_set():
         try:
-            if not ws.open:
+            asyncio.sleep(0.15)
+            if not ws.open and signal.is_set():
                 print("Not open")
-                ws = await websockets.connect("ws://cpen291-16.ece.ubc.ca/ws/rpicam")
+                ws = await asyncio.wait_for(websockets.connect("ws://cpen291-16.ece.ubc.ca/ws/rpicam"), 5)
             if IMAGE is not None:
                 try:
-                    await asyncio.sleep(0.15)
                     await asyncio.wait_for(ws.send(IMAGE.tobytes()), 0.5)
                 except asyncio.TimeoutError:
                     # print("Timeout")
                     ws.close()
-        except websockets.exceptions.ConnectionClosed:
+        except:
             # Catch error, open again
             pass
 
