@@ -75,6 +75,25 @@
               </div>
             </div>
           </div>
+          <div class="row">
+            <div class="col-sm">
+              <div class="card">
+                  <div class="card-body">
+                      <div class="h5 card-title"><b>Set Frequency</b></div>
+                      <p class="card-text">Click to set frequency for camera swing.</p>
+                      <form class="form-inline">
+                        <div class="form-group mx-sm-3 mb-2">
+                          <label for="inputPassword2" class="sr-only">Password</label>
+                          <input type="password" class="form-control" id="user_frequency" placeholder="Frequency">
+                        </div>
+                      </form>
+                      <strong><div class="h6 status" id="Set"></div></strong>
+                      <button style = class="btn btn-success" onclick="requestSetFrequency()">Set</button>
+                  </div>
+              </div>
+            </div>
+          </div>
+        </div>
           <div class="col-sm mt-4">
               <div class="card">
                   <div class="card-body">
@@ -93,7 +112,11 @@
                 </div>
             </div>
             <div class="col-sm">
-              <!-- Empty -->
+              <div class="card">
+                  <div class="card-body">
+                    <div id="tableAll"></div>
+                  </div>
+              </div>
             </div>
         </div>
     </div>
