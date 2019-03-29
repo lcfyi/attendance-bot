@@ -22,22 +22,12 @@ class TrackRobot(Robot_Control):
         self.x = [120, 100, 80, 60]
         self.y = [90, 110]
 
-    def changeAngles(self, max, min):
-        if max < 150 and min > 10:
-            for i in range(0, 3):
-                self.x[i] = (max - min)/3*i+min
-
-    def servoTime(self, time):
-        self.servo_time = time
-
-    def moveTime(self, time):
-        self.move_time = time
-
     def checkTrack(self):
             current = time.perf_counter()
             track = 0
             while True:
-                if (time.perf_counter() - current) >= self.params["move"]:
+                if (time.perf_counter() - current) >= \
+                    (self.params["move"] / 10) * 5:
                     break
                 # true when we detect white
                 rightVal = not self.leftSensor.read_sensor()
@@ -69,7 +59,8 @@ class TrackRobot(Robot_Control):
             for x in self.x:
                 self.x_pan.change_angle(x)
                 currenttime = time.perf_counter()
-                while time.perf_counter() - currenttime < self.params["angle"]:
+                while time.perf_counter() - currenttime < \
+                    (self.params["angle"] / 10) * 5:
                     pass
 
     
