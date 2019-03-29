@@ -146,8 +146,19 @@ requestUnclaimed = () => {
     // Send the payload with requestSecret
     xml.send("requestTable=unclaimed");
 }
-requestSetFrequency = () =>{
-    frequency_socket.send(JSON.stringify(document.getElementById("user_frequency")));
+
+
+requestSetParameters= () =>{
+    let ws = new WebSocket("ws://cpen291-16.ece.ubc.ca/ws/signal/client");
+    ws.addEventListener ('open', (e) => {
+        sendObj = {"angle": 2, "move":0.5, "max":120, "min": 60, "updated":true};
+        newFreqValue = document.getElementById("user_frequency").value;
+        newDistValue = document.getElementById("user_distance").value;
+        sendObj["angle"] = parseInt(newFreqValue);
+        sendObj["move"] = parseInt(newDistValue);
+        ws.send(JSON.stringify(sendObj));
+        ws.close();
+    });
 }
 
 /**
