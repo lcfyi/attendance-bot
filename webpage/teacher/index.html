@@ -74,6 +74,22 @@
               <div class="col-lg">
                 <div class="card">
                     <div class="card-body">
+                        <div class="h5 card-title"><b>Request Update</b></div>
+                        <p class="card-text">Enter the student number below and click 'Set Status' to set the Needs_Update status to 1</p>
+                        <strong><div class="h6 status" id="updateStatus"></div></strong>
+                        <br>
+                        <label for="stuID">Student ID:</label>
+                        <input id="stuIDInput" type="text" name="stuID" class="form-control responsive-width" placeholder="Enter Student ID">
+                        
+                        <button class="btn btn-success" onclick="requestSetNeedsUpdate()">Set Status</button>
+                    </div>
+                </div>
+              </div>
+            </div>
+            <div class="row mt-4">
+              <div class="col-lg">
+                <div class="card">
+                    <div class="card-body">
                         <div class="h5 card-title"><b>Clear attendance</b></div>
                         <p class="card-text">Click the 'clear' button to clear the attendance list.</p>
                         <strong><div class="h6 status" id="clearStatus"></div></strong>
