@@ -47,6 +47,31 @@ requestNewDbEntry = () => {
     xml.send("requestSecret=true");
 }
 
+requestSetNeedsUpdate = () => {
+    // No validation necessary for this function since we assume
+    // the teacher is not malicious
+    let inputVal = document.getElementById("stuIDInput").value;
+    if (!(inputVal === "" || isNaN(inputVal))){
+        let xml = new XMLHttpRequest();
+        xml.onreadystatechange = function() {
+            if (this.status === 200 && this.readyState === 4) {
+                // Success, print the secret to the status div
+                document.getElementById("updateStatus").innerHTML = this.responseText;
+            }
+        }
+        
+        sendString = "requestUpdate=";
+        sendString += inputVal;
+        console.log(sendString);
+        // Call our create_new_db_entry.php endpoint
+        xml.open("POST", "set_needs_update.php");
+        // We have to set the header since we don't have anything else controlling it
+        xml.setRequestHeader("content-type", "application/x-www-form-urlencoded");
+        // Send the payload with requestSecret
+        xml.send(sendString);
+    }
+}
+
 requestClearPresent = () => {
     // No validation necessary for this function since we assume
     // the teacher is not malicious
@@ -90,10 +115,10 @@ requestAll = () => {
     xml.onreadystatechange = function () {
         if (this.status === 200 && this.readyState === 4) {
             // Success, thus build the table
-            console.log(this.responseText);
+            //console.log(this.responseText);
             let body = tableHelper(["Student ID", "Name"], JSON.parse(this.responseText));
             document.getElementById("tableAll").innerHTML = body;
-            console.log(JSON.parse(this.responseText));
+            //console.log(JSON.parse(this.responseText));
         }
     }
     // Call our create_new_db_entry.php endpoint
