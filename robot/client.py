@@ -7,6 +7,7 @@ import numpy as np
 from time import perf_counter as now
 from track_bot import TrackRobot as bot
 import json
+from time import sleep as nap
 
 THREADS = []
 PROCESSES = []
@@ -68,13 +69,14 @@ async def paramAsy(dictionary, signal):
         # it will always try to restore the connection
         try:
             # Open the connection
-            ws = await asyncio.wait_for(websockets.connect("ws://cpen291-16.ece.ubc.ca/ws/signal/rpi"), 1)
+            # print("Start the params socket")
+            ws = await asyncio.wait_for(websockets.connect("ws://cpen291-16.ece.ubc.ca/ws/signal/rpi"), 3)
             # Second while loop
             while signal.is_set():
                 asyncio.sleep(0.15)
                 # If the socket isn't open for some reason, open it again
                 if not ws.open and signal.is_set():
-                    ws = await asyncio.wait_for(websockets.connect("ws://cpen291-16.ece.ubc.ca/ws/signal/rpi"), 1)
+                    ws = await asyncio.wait_for(websockets.connect("ws://cpen291-16.ece.ubc.ca/ws/signal/rpi"), 3)
                 # Grab the dictionary
                 ret = await ws.recv()
                 val = json.loads(ret)
@@ -84,9 +86,17 @@ async def paramAsy(dictionary, signal):
                 dictionary["max"] = val["max"]
                 dictionary["min"] = val["min"]
         except:
+            # print("Error on params socket")
+            try:
+                if ws.open:
+                    ws.close()
+            except AttributeError:
+                # print("Attribute error")
+                pass
             # Close the socket if it's still open, and keep going
-            if ws.open:
-                ws.close()
+            # pass
+            # if ws.open:
+            #     ws.close()
 
 # Camera websocket, should start up if fails and run forever
 async def camAsy(signal):
@@ -94,18 +104,26 @@ async def camAsy(signal):
     while signal.is_set():
         try:
             # Start the connection
-            ws = await asyncio.wait_for(websockets.connect("ws://cpen291-16.ece.ubc.ca/ws/rpicam"), 1)
+            # print("Start the frame socket")
+            ws = await asyncio.wait_for(websockets.connect("ws://cpen291-16.ece.ubc.ca/ws/rpicam"), 3)
             while signal.is_set():
                 asyncio.sleep(0.15)
                 # If the socket isn't open, open it again
                 if not ws.open and signal.is_set():
-                    ws = await asyncio.wait_for(websockets.connect("ws://cpen291-16.ece.ubc.ca/ws/rpicam"), 1)
+                    ws = await asyncio.wait_for(websockets.connect("ws://cpen291-16.ece.ubc.ca/ws/rpicam"), 3)
                 # If the image isn't none, send it
                 if IMAGE is not None:
                     await asyncio.wait_for(ws.send(IMAGE.tobytes()), 0.5)
         except:
-            if ws.open:
-                ws.close()
+            # print("Error on frames socket")
+            try:
+                if ws.open:
+                    ws.close()
+            except AttributeError:
+                # print("Attribute error")
+                pass
+            # if ws.open:
+            #     ws.close()
 
 async def main(signal):
     # Process setup
@@ -129,6 +147,7 @@ async def main(signal):
     for p in PROCESSES:
         p.start()
 
+    nap(5)
     # Add our tasks to the event loop and run them concurrerntly
     await asyncio.gather(paramAsy(dic, signal), camAsy(signal))
 
