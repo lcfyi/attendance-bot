@@ -2,9 +2,11 @@ init = () => {
     // Run it at first
     requestPresent();
     requestUnclaimed();
+    requestAll();
     // Set the intervals until forever
     setInterval(requestPresent, 3000);
     setInterval(requestUnclaimed, 3000);
+    setInterval(requestAll, 20000);
     // Set up the socket stream from the raspberry pi, open it
     let uri = "ws://" + window.location.hostname + "/ws/client";
     try {
@@ -45,6 +47,32 @@ requestNewDbEntry = () => {
     xml.send("requestSecret=true");
 }
 
+requestSetNeedsUpdate = () => {
+    // No validation necessary for this function since we assume
+    // the teacher is not malicious
+    let inputVal = document.getElementById("stuIDInput").value;
+    if (!(inputVal === "" || isNaN(inputVal))){
+        let xml = new XMLHttpRequest();
+        xml.onreadystatechange = function() {
+            if (this.status === 200 && this.readyState === 4) {
+                // Success, print the secret to the status div
+                document.getElementById("updateStatus").innerHTML = this.responseText;
+                document.getElementById("stuIDInput").value = "";
+                setTimeout((e) => {
+                    document.getElementById("updateStatus").innerHTML = "";
+                }, 3000);
+            }
+        }
+        sendString = "requestUpdate=" + inputVal;
+        // Call our create_new_db_entry.php endpoint
+        xml.open("POST", "set_needs_update.php");
+        // We have to set the header since we don't have anything else controlling it
+        xml.setRequestHeader("content-type", "application/x-www-form-urlencoded");
+        // Send the payload with requestSecret
+        xml.send(sendString);
+    }
+}
+
 requestClearPresent = () => {
     // No validation necessary for this function since we assume
     // the teacher is not malicious
@@ -83,6 +111,25 @@ requestPresent = () => {
     xml.send("requestTable=present");
 }
 
+requestAll = () => {
+    let xml = new XMLHttpRequest();
+    xml.onreadystatechange = function () {
+        if (this.status === 200 && this.readyState === 4) {
+            // Success, thus build the table
+            //console.log(this.responseText);
+            let body = tableHelper(["Student ID", "Name"], JSON.parse(this.responseText));
+            document.getElementById("tableAll").innerHTML = body;
+            //console.log(JSON.parse(this.responseText));
+        }
+    }
+    // Call our create_new_db_entry.php endpoint
+    xml.open("POST", "request_db_entries.php");
+    // We have to set the header since we don't have anything else controlling it
+    xml.setRequestHeader("content-type", "application/x-www-form-urlencoded");
+    // Send the payload with requestSecret
+    xml.send("requestTable=getAll");
+}
+
 requestUnclaimed = () => {
     let xml = new XMLHttpRequest();
     xml.onreadystatechange = function () {
@@ -98,6 +145,9 @@ requestUnclaimed = () => {
     xml.setRequestHeader("content-type", "application/x-www-form-urlencoded");
     // Send the payload with requestSecret
     xml.send("requestTable=unclaimed");
+}
+requestSetFrequency = () =>{
+    frequency_socket.send(JSON.stringify(document.getElementById("user_frequency")));
 }
 
 /**

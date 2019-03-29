@@ -26,6 +26,16 @@
                 }
                 echo json_encode($retTable);
             }
+        } else if ($_POST['requestTable'] === "getAll") {
+            $sql_query = "SELECT `studentID`, `Name` FROM `student_info`";
+    
+            if ($result = mysqli_query($db, $sql_query)) {
+                $retTable = array();
+                while ($row = mysqli_fetch_row($result)) {
+                    $retTable[] = $row;
+                }
+                echo json_encode($retTable);
+            }
         } else {
             echo "Bad request";
         }

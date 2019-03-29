@@ -15,70 +15,113 @@
     <!-- Navbar stuff -->
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
       <a class="navbar-brand" href="#">
-        <img src="/assets/imgs/logo.png" width="30" height="30" alt="">
+        <img src="../assets/imgs/logo.png" width="30" height="30" alt="">
       </a>
       <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
       </button>
       <div class="collapse navbar-collapse" id="navbarNav">
-        <ul class="navbar-nav">
-          <li class="nav-item">
-            <a class="nav-link" href="/">Home</a>
+
+        <ul class="navbar-nav mr-auto">
+          <li class="nav-item active">
+            <a class="nav-link" href="/">Home <span class="sr-only">(current)</span></a>
           </li>
           <li class="nav-item">
             <a class="nav-link" href="/student">Student</a>
           </li>
-          <li class="nav-item active">
-            <a class="nav-link" href="/teacher">Teacher <span class="sr-only">(current)</span></a>
+          <li class="nav-item">
+            <a class="nav-link" href="/teacher">Teacher</a>
+          </li>
+            
+        </ul>
+
+        <ul class="navbar-nav">
+          <li class="nav-item">
+              <a class="navbar-brand" href="#">Cpen291 Group A16 </a>
           </li>
         </ul>
+         
       </div>
     </nav>
     
     <!-- Dashboard stuff -->
     <div class="container">
         <div class="row mt-4">
-            <div class="col-lg">
+            <div class="col-sm">
                 <div class="card">
+                    <h5 class="card-header">Students Present</h5>
                     <div class="card-body">
                         <div id="tablePresent"></div>
                     </div>
                 </div>
             </div>
         </div>
-        <div class="row">
+        <div class="row mt-4">
           <div class="col-sm">
-            <div class="row mt-4">
-              <div class="col-lg">
-                <div class="card">
-                    <div class="card-body">
-                        <div class="h5 card-title"><b>Generate new secret</b></div>
-                        <p class="card-text">Click the 'generate' button to generate a new secret.</p>
-                        <strong><div class="h6 status" id="secretStatus"></div></strong>
-                        <br>
-                        <button class="btn btn-success" onclick="requestNewDbEntry()">Generate</button>
-                    </div>
+            <div class="card">
+                <h5 class="card-header">Generate New Secret</h5>
+                <div class="card-body">
+                    <p class="card-text">Click the 'generate' button to generate a new secret.</p>
+                    <strong><div class="h6 status" id="secretStatus"></div></strong>
+                    <br>
+                    <button class="btn btn-success" onclick="requestNewDbEntry()">Generate</button>
                 </div>
-              </div>
-            </div>
-            <div class="row mt-4">
-              <div class="col-lg">
-                <div class="card">
-                    <div class="card-body">
-                        <div class="h5 card-title"><b>Clear attendance</b></div>
-                        <p class="card-text">Click the 'clear' button to clear the attendance list.</p>
-                        <strong><div class="h6 status" id="clearStatus"></div></strong>
-                        <br>
-                        <button class="btn btn-success" onclick="requestClearPresent()">Clear</button>
-                    </div>
-                </div>
-              </div>
             </div>
           </div>
-          <div class="col-sm mt-4">
+          <div class="col-sm">
+            <div class="card">
+                <h5 class="card-header">Clear Attendance</h5>
+                <div class="card-body">
+                    <p class="card-text">Click the 'clear' button to clear the attendance list.</p>
+                    <strong><div class="h6 status" id="clearStatus"></div></strong>
+                    <br>
+                    <button class="btn btn-success" onclick="requestClearPresent()">Clear</button>
+                </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="row mt-4">
+          <div class="col-sm">
+            <div class="card">
+                <h5 class="card-header">Set Frequency</h5>
+                <div class="card-body">
+                    <p class="card-text">Slide to set frequency for camera swing.</p>
+                    <form class="form-inline">
+                      <div class="form-group mx-sm-3 mb-2">
+                        <label for="inputPassword2" class="sr-only">Password</label>
+                        <div class="d-flex justify-content-center my-4">                           
+                            <form name="Frequency">
+                              <input type="range" name="ageInputName" id="user_frequency" min="1" max="10" oninput="outvalue.value = user_frequency.value">
+                              <output  id="outvalue">5</output>
+                            </form>                         
+                        </div>
+                      </div>
+                    </form>
+                    <strong><div class="h6 status" id="Set"></div></strong>
+                    <button class="btn btn-success" onclick="requestSetFrequency()">Set</button>
+                </div>
+            </div>
+          </div>
+          <div class="col-sm md-4">
+            <div class="card">
+                <h5 class="card-header">Request Update</h5>
+                <div class="card-body">
+                    <p class="card-text">Enter a student number below to allow the student to update their entry.</p>
+                    <strong><div class="h6 status" id="updateStatus"></div></strong>
+                    <br>
+                    <input id="stuIDInput" type="text" name="stuID" class="form-control responsive-width" placeholder="Enter Student ID">
+                    <br>
+                    <button class="btn btn-success" onclick="requestSetNeedsUpdate()">Set Status</button>
+                </div>
+            </div>
+          </div>
+        </div>
+        <div class="row mt-4">
+          <div class="col-sm">
               <div class="card">
+                  <h5 class="card-header">Camera</h5>
                   <div class="card-body">
-                      <div class="h5 card-title"><b>Camera</b></div>
                       <div class="camera"><canvas id="camFeed" width="640" height="480"></canvas></div>
                   </div>
               </div>
@@ -87,13 +130,19 @@
         <div class="row mt-4">
             <div class="col-sm">
                 <div class="card">
+                    <h5 class="card-header">Unclaimed Secrets</h5>
                     <div class="card-body">
                         <div id="tableUnclaimed"></div>
                     </div>
                 </div>
             </div>
             <div class="col-sm">
-              <!-- Empty -->
+              <div class="card">
+                  <h5 class="card-header">Registered Students</h5>
+                  <div class="card-body">
+                    <div id="tableAll"></div>
+                  </div>
+              </div>
             </div>
         </div>
     </div>
