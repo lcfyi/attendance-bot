@@ -45,7 +45,7 @@ def robot(dictionary):
             else:
                 rob.goStraight()
             curr_time = now()
-            while now() - curr_time < 1:
+            while now() - curr_time < 0.2:
                 continue
         rob.stop()
         rob.scan()
@@ -82,7 +82,7 @@ async def camAsy(signal):
                 ws = await websockets.connect("ws://cpen291-16.ece.ubc.ca/ws/rpicam")
             if IMAGE is not None:
                 try:
-                    await asyncio.sleep(0.2)
+                    await asyncio.sleep(0.15)
                     await asyncio.wait_for(ws.send(IMAGE.tobytes()), 0.5)
                 except asyncio.TimeoutError:
                     print("Timeout")

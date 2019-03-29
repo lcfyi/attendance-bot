@@ -221,7 +221,7 @@ async def client_handler(websocket, path):
                 f = cv2.imencode('.jpg', RAW_FRAME, encode_param)[1]
                 try:
                     print("Sending")
-                    await asyncio.wait_for(websocket.send(f.tobytes()), 0.2)
+                    await asyncio.wait_for(websocket.send(f.tobytes()), 1)
                     # print("Sent")
                 except asyncio.TimeoutError:
                     print("Raw timeout")
