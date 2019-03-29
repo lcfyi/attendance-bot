@@ -1,28 +1,21 @@
-navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUser ||
-navigator.mozGetUserMedia || navigator.msGetUserMedia;
-
-init = () => {
-    if (navigator.getUserMedia) {
-        navigator.getUserMedia({video: {width: {ideal: 2048}, height: {ideal: 2048}, facingMode: "user"}}, (e) => {
-            // Successfully opened stream
+init = async () => {
+    let constraints = {video: {width: {ideal: 2048}, height: {ideal: 2048}, facingMode: "user"}};
+    navigator.mediaDevices.getUserMedia(constraints).then((stream) => {
+        let video = document.getElementById('video');
+        video.srcObject = stream;
+        video.play();
+        video.addEventListener('loadeddata', (e) => {
             let video = document.getElementById('video');
-            video.srcObject = e;
-            video.play();
-            video.addEventListener('loadeddata', (e) => {
-                let video = document.getElementById('video');
-                let canvas = document.getElementById('canvas');
-                let context = canvas.getContext('2d');
-                canvas.height = video.videoHeight;
-                canvas.width = video.videoWidth;
-                context.fillStyle = 'grey';
-                context.fillRect(0, 0, canvas.width, canvas.height);
-            });
-        },
-        (e) => {
-            // Error opening the stream
-            alert(e.name);
+            let canvas = document.getElementById('canvas');
+            let context = canvas.getContext('2d');
+            canvas.height = video.videoHeight;
+            canvas.width = video.videoWidth;
+            context.fillStyle = 'grey';
+            context.fillRect(0, 0, canvas.width, canvas.height);
         });
-    }
+    }).catch((error) => {
+        window.location.href = "https://cpen291-16.ece.ubc.ca/student/";
+    });
 
     document.getElementById("snap").addEventListener("click", (e) => {
         // Grab everything we need
@@ -82,7 +75,7 @@ validateForm = () => {
         valid = false;
         retVals.push("image");
     }
-    let retStr = "Invalid ";
+    let retStr = "<div class='alert alert-danger'>Invalid ";
     for (let i = 0; i < retVals.length; i++) {
         if (i === 0) {
             retStr += retVals[i];
@@ -90,11 +83,9 @@ validateForm = () => {
             retStr += ", " + retVals[i];
         }
     }
-    retStr += ".";
+    retStr += ".</div>";
     if (!valid) {
         formStatus.innerHTML = retStr;
-    } else {
-        formStatus.innerHTML = "";
     }
     return valid;
 }
