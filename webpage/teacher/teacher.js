@@ -2,10 +2,15 @@ init = () => {
     // Run it at first
     requestPresent();
     requestUnclaimed();
+    requestAll();
     // Set the intervals until forever
     setInterval(requestPresent, 3000);
     setInterval(requestUnclaimed, 3000);
+<<<<<<< HEAD
     frequency_socket = new WebSocket("ws://cpen291-16.ece.ubc.ca/ws/signal/param"); //Socket for frequency set
+=======
+    setInterval(requestAll, 20000);
+>>>>>>> refs/remotes/origin/master
     // Set up the socket stream from the raspberry pi, open it
     let uri = "ws://" + window.location.hostname + "/ws/client";
     try {
@@ -82,6 +87,25 @@ requestPresent = () => {
     xml.setRequestHeader("content-type", "application/x-www-form-urlencoded");
     // Send the payload with requestSecret
     xml.send("requestTable=present");
+}
+
+requestAll = () => {
+    let xml = new XMLHttpRequest();
+    xml.onreadystatechange = function () {
+        if (this.status === 200 && this.readyState === 4) {
+            // Success, thus build the table
+            console.log(this.responseText);
+            let body = tableHelper(["Student ID", "Name"], JSON.parse(this.responseText));
+            document.getElementById("tableAll").innerHTML = body;
+            console.log(JSON.parse(this.responseText));
+        }
+    }
+    // Call our create_new_db_entry.php endpoint
+    xml.open("POST", "request_db_entries.php");
+    // We have to set the header since we don't have anything else controlling it
+    xml.setRequestHeader("content-type", "application/x-www-form-urlencoded");
+    // Send the payload with requestSecret
+    xml.send("requestTable=getAll");
 }
 
 requestUnclaimed = () => {
