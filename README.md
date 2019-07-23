@@ -14,7 +14,7 @@ Watch Bot is an automatic attendance taking solution to simplify keeping track o
 ### Technologies
 
 - Raspberry Pi
-- <a href="https://github.com/ageitgey/face_recognition" target="_blank"><code>face_recognition</code> Python library</a>
+- [`face_recognition` Python library](https://github.com/ageitgey/face_recognition)
 - Unix virtual machine (server host)
 
 ### Concepts 
@@ -59,13 +59,12 @@ Our server implementation uses two processes to enable our solution, processes S
 
 <!-- This will be replaced by a diagram sometime in the future -->
 
-<center>
-<pre>
+```
 |------------|<-- params --|----------|<-- params --|------------|
 |     Pi     |             |    VM    |             |   Client   |
 |------------|-- frames -->|----------|-- frames -->|------------|
-</pre>
-</center>
+```
+
 
 #### Raspberry Pi
 
@@ -76,14 +75,7 @@ Similarly to the [server](#server), the Raspberry Pi also uses two process. They
 |RP1| This is the main process on the Raspberry Pi. It runs two threads: <br>  <ul>Camera Module thread: Receives medium resolution frames from the camera using openCV and updates the image global variable.</ul><ul>Socket interface thread: Maintains the event loop and handles two socket connections, both from the server. It also updates the parameters to change the behavior of the robot defined on the web-app.</ul>  |
 |RP2| This is the robot operation process. It uses the input from the optical sensors attached to the Raspberry Pi to ensure that the robot stays on the rails it is perched on.|
 
-<center>
-<figure>
-  <img src="img/rpi.png" style="left:20%; width: 80%;"/>
-  <figcaption>Raspberry Pi information flow</figcaption>
-</figure>
-</center>
-
-
+![Raspberry Pi information flow](img/rpi.png)
 
 ### Website
 
@@ -99,9 +91,7 @@ The student page allows students to put in their student ID, name, photo, and a 
 
 Once the student registers, the database recognizes either a new entry or an update. The image is then gathered by the polling script and a facial encoding for the student is generated and stored in their database entry.
 
-<center>
-<img src="img/student.png" style="left:20%; width: 80%;"/>
-</center>
+![Student Page](img/student.png)
 
 #### Teacher operation hub
 
@@ -118,17 +108,11 @@ The teacher hub will allow the teacher to:
 
 It is password protected. Note that hovering over the names of any students will show the they submitted during registration.
 
-<center>
-<img src="img/teacher1.png" style="left:20%; width: 80%;"/>
-</center>
+![Teacher Hub Part 1](img/teacher1.png)
 
-<center>
-<img src="img/teacher2.png" style="left:20%; width: 80%;"/>
-</center>
+![Teacher Hub Part 2](img/teacher2.png)
 
-<center>
-<img src="img/teacher3.png" style="left:20%; width: 80%;"/>
-</center>
+![Teacher Hub Part 3](img/teacher3.png)
 
 ### Database
 
@@ -150,12 +134,7 @@ Each student is registered in the `student_info` table with the following fields
 
 **Re-registration**: The teacher can review the images that the students have uploaded and set the `Valid` field to false using the `Request Update` field on the teacher hub. This is done in the event that the the teacher decides that a better quality image of the student is required for better facial recognition.
 
-<center>
-<figure>
-  <img src="img/stuWorkflow.png" style="left:20%; width: 80%;"/>
-  <figcaption>Registration and re-registration workflow</figcaption>
-</figure>
-</center>
+![Registration and re-registration workflow](img/stuWorkflow.png)
 
 **Attendance**: The teacher can use the hub to:
 
@@ -165,9 +144,4 @@ Each student is registered in the `student_info` table with the following fields
 
 ## Overall Information Flow
 
-<center>
-<figure>
-  <img src="img/info_flow.png" style="left:20%; width: 80%;"/>
-  <figcaption>Client-Server-Robot communication</figcaption>
-</figure>
-</center>
+![Client-Server-Robot communication](img/info_flow.png)
